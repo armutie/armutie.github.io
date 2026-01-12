@@ -307,21 +307,13 @@ h2 {
 .project-page {
     max-width: 720px;
     margin: 0 auto;
-    padding: 60px 40px 80px;
+    padding: 100px 40px 80px;
     min-height: 100vh;
     background: var(--bg-color);
 }
 
 .project-page.compact {
     max-width: 900px;
-}
-
-.project-nav {
-    margin-bottom: 3rem;
-}
-
-.project-page.compact .project-nav {
-    margin-bottom: 1.5rem;
 }
 
 .back-link {
