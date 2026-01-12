@@ -463,11 +463,10 @@ h2 {
     border: 1px solid var(--card-border);
 }
 
-/* Video Grid */
-.video-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+/* Centered single video */
+.video-centered {
+    display: flex;
+    justify-content: center;
     margin-top: 1.5rem;
 }
 
@@ -476,16 +475,12 @@ h2 {
     flex-direction: column;
 }
 
-.video-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    aspect-ratio: 16/9;
-    background: var(--bg-secondary);
-    border: 2px dashed var(--card-border);
+.video-card iframe {
+    width: 100%;
+    aspect-ratio: 9/16;
+    max-height: 400px;
     border-radius: 12px;
-    color: var(--text-secondary);
-    font-size: 0.875rem;
+    border: 1px solid var(--card-border);
 }
 
 .video-caption {
