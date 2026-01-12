@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UW BattleBot | Abdur Rahman Mutie</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+    <main class="project-page compact">
+        <nav class="project-nav">
+            <a href="../index.html" class="back-link">← Back</a>
+        </nav>
+
+        <!-- Compact header + hero combo -->
+        <header class="project-header-inline fade-in">
+            <div class="header-text">
+                <span class="project-tag">Robotics</span>
+                <h1>UW BattleBot</h1>
+                <p class="project-subtitle">150g vertical spinner</p>
+            </div>
+            <div class="header-hero">
+                <img src="../src/battlebot/IMG_D07EE18A-565F-40E8-AF65-B41D6E5C6F24.jpeg"
+                    alt="Assembled BattleBot with vertical saw spinner">
+            </div>
+        </header>
+
+        <article class="project-content">
+            <!-- OVERVIEW: Text + CAD side by side -->
+            <section class="split-section fade-in">
+                <div class="split-text">
+                    <h2>Overview</h2>
+                    <p>
+                        I teamed up with three classmates to design and build a 150g combat robot for UW BattleBots.
+                        I owned mechanical design: CAD, 3D printing, and weapon fabrication.
+                    </p>
+                    <p>
+                        Out of 20+ teams, only 7 finished a working bot. Ours survived 3 rounds.
+                    </p>
+                </div>
+                <div class="split-image">
+                    <img src="../src/battlebot/9D462438-76DA-4E78-B44B-09B14E9AE038.jpeg" alt="BattleBot CAD render">
+                </div>
+            </section>
+
+            <!-- EVOLUTION: Full-width image -->
+            <section class="fade-in">
+                <h2>Evolution</h2>
+                <p>
+                    My favorite image; the design went through multiple iterations as we refined the chassis, weapon
+                    mounting, and
+                    electronics layout.
+                </p>
+                <img src="../src/battlebot/IMG_3269.jpeg" alt="BattleBot evolution - 6 versions side by side"
+                    class="content-image full">
+            </section>
+
+            <!-- WEAPON: Image + Text (reversed) -->
+            <section class="split-section reverse fade-in">
+                <div class="split-text">
+                    <h2>The Weapon</h2>
+                    <p>
+                        The vertical spinner was machined from a single aluminum block for maximum
+                        strength.
+                    </p>
+                    <p>
+                        In testing, it shredded through an aluminum can in seconds.
+                    </p>
+                </div>
+                <div class="split-image">
+                    <img src="../src/battlebot/337273F4-120A-4201-AA1F-7246FB05B7E3.jpeg"
+                        alt="Machined vertical saw blade">
+                </div>
+            </section>
+
+            <!-- TESTING + DESTRUCTION: Side by side video placeholders -->
+            <section class="fade-in">
+                <h2>In Action</h2>
+                <div class="video-grid">
+                    <div class="video-card">
+                        <div class="video-placeholder">
+                            <span>Movement test</span>
+                        </div>
+                        <p class="video-caption">Early drive testing</p>
+                    </div>
+                    <div class="video-card">
+                        <div class="video-placeholder">
+                            <span>Can destruction</span>
+                        </div>
+                        <p class="video-caption">Saw weapon test</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LEARNINGS -->
+            <section class="fade-in">
+                <h2>What I Learned</h2>
+                <ul>
+                    <li>Iterated through 6 chassis designs in 2 weeks</li>
+                    <li>Early design decisions determine the success of the entire project</li>
+                    <li>How to handle a 3D print failing on competition morning</li>
+                </ul>
+            </section>
+
+            <!-- SPECS: Full-width row -->
+            <section class="specs-section-full fade-in">
+                <h2>Specs</h2>
+                <div class="specs-row">
+                    <div class="spec-item">
+                        <span class="spec-label">Weight Class</span>
+                        <span class="spec-value">150 g</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Weapon</span>
+                        <span class="spec-value">Vertical Saw</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Frame</span>
+                        <span class="spec-value">3D-printed PLA</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Build Time</span>
+                        <span class="spec-value">2 weeks</span>
+                    </div>
+                </div>
+            </section>
+        </article>
+
+        <footer class="project-footer fade-in">
+            <a href="../index.html" class="back-link">← Back to home</a>
+        </footer>
+    </main>
+
+    <script>
+        // Fade-in on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+
+</html>

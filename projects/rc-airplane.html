@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous RC Aircraft | Abdur Rahman Mutie</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+    <main class="project-page compact">
+        <nav class="project-nav">
+            <a href="../index.html" class="back-link">← Back</a>
+        </nav>
+
+        <header class="project-header-inline fade-in">
+            <div class="header-text">
+                <span class="project-tag in-progress">In Progress</span>
+                <h1>Autonomous RC Aircraft</h1>
+                <p class="project-subtitle">From manual flight to GPS waypoint navigation</p>
+            </div>
+            <div class="header-hero">
+                <img src="../src/rc-airplane-concept.png" alt="RC Aircraft concept illustration">
+            </div>
+        </header>
+
+        <article class="project-content">
+            <!-- THE VISION -->
+            <section class="fade-in">
+                <h2>The Vision</h2>
+                <p>
+                    Building an autonomous fixed-wing aircraft from scratch. Starting with manual flight,
+                    then incrementally adding autonomy — stabilization, auto takeoff/landing, and eventually
+                    GPS waypoint navigation.
+                </p>
+            </section>
+
+            <!-- PHASED ROADMAP -->
+            <section class="fade-in">
+                <h2>Roadmap</h2>
+                <div class="roadmap">
+                    <div class="phase current">
+                        <div class="phase-header">
+                            <span class="phase-number">Phase 1</span>
+                            <span class="phase-status">Current</span>
+                        </div>
+                        <h3>Get It Flying</h3>
+                        <p>Build the airframe, install electronics, achieve stable manual flight.</p>
+                        <ul>
+                            <li>Design and build fuselage + wings</li>
+                            <li>Install motor, ESC, servos, receiver</li>
+                            <li>First manual flight test</li>
+                        </ul>
+                    </div>
+
+                    <div class="phase">
+                        <div class="phase-header">
+                            <span class="phase-number">Phase 2</span>
+                        </div>
+                        <h3>Auto-Stabilization</h3>
+                        <p>Add an ESP32 with IMU for PID-based flight stabilization.</p>
+                        <ul>
+                            <li>Integrate ESP32 + MPU6050</li>
+                            <li>Implement PID control for pitch/roll</li>
+                            <li>Test stability assist mode</li>
+                        </ul>
+                    </div>
+
+                    <div class="phase stretch">
+                        <div class="phase-header">
+                            <span class="phase-number">Phase 3</span>
+                            <span class="phase-tag">Stretch Goal</span>
+                        </div>
+                        <h3>Auto Takeoff & Landing</h3>
+                        <p>Altitude hold and automated takeoff/landing sequences.</p>
+                    </div>
+
+                    <div class="phase stretch">
+                        <div class="phase-header">
+                            <span class="phase-number">Phase 4</span>
+                            <span class="phase-tag">Stretch Goal</span>
+                        </div>
+                        <h3>GPS Navigation</h3>
+                        <p>Autonomous flight between GPS waypoints.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CURRENT STATUS -->
+            <section class="fade-in">
+                <h2>Current Status</h2>
+                <ul class="progress-list">
+                    <li class="done">Parts and electronics purchased</li>
+                    <li class="in-progress">Designing airframe</li>
+                    <li class="todo">Build fuselage</li>
+                    <li class="todo">First flight</li>
+                </ul>
+            </section>
+
+            <!-- BUILD LOG -->
+            <section class="fade-in">
+                <h2>Build Log</h2>
+                <div class="build-log">
+                    <div class="log-entry">
+                        <span class="log-date">Jan 2026</span>
+                        <span class="log-text">Purchased motor, ESC, servos, and foam board. Starting design.</span>
+                    </div>
+                    <!-- Add more entries as you progress -->
+                </div>
+            </section>
+        </article>
+
+        <footer class="project-footer fade-in">
+            <a href="../index.html" class="back-link">← Back to home</a>
+        </footer>
+    </main>
+
+    <script>
+        // Fade-in on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+
+</html>
