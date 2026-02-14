@@ -418,7 +418,7 @@ h2 {
 }
 
 .project-content ul li::before {
-    content: '→';
+    content: '->';
     position: absolute;
     left: 0;
     color: var(--accent);
@@ -550,17 +550,17 @@ h2 {
 }
 
 .progress-list li.done::before {
-    content: '✓';
+    content: '[x]';
     color: #22c55e;
 }
 
 .progress-list li.in-progress::before {
-    content: '◐';
+    content: '[~]';
     color: var(--accent);
 }
 
 .progress-list li.todo::before {
-    content: '○';
+    content: '[ ]';
     color: var(--text-secondary);
 }
 

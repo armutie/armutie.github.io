@@ -13,6 +13,7 @@
         rel="stylesheet">
 
     <link rel="stylesheet" href="../style.css">
+    <script src="../script.js" defer></script>
 </head>
 
 <body>
@@ -138,22 +139,13 @@
         </article>
 
         <footer class="project-footer fade-in">
-            <a href="../index.html" class="back-link">← Back to home</a>
+            <a href="../index.html" class="back-link"><- Back to home</a>
         </footer>
     </main>
-
-    <script>
-        // Fade-in on scroll
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-    </script>
+    <!-- Cloudflare Web Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+        data-cf-beacon='{"token": "fada2897b3d740559851f4f5841840f5"}'></script>
+    <!-- End Cloudflare Web Analytics -->
 </body>
 
 </html>
