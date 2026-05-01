@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Abdur Rahman Mutie — Mechatronics Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Azeret+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --void: #0a0a0b;
+      --deep: #111114;
+      --surface: #16161a;
+      --edge: #1e1e24;
+      --wire: rgba(255,255,255,0.07);
+      --wire-bright: rgba(255,255,255,0.14);
+      --text: #e8e6e0;
+      --dim: #7a7870;
+      --ghost: #3d3d40;
+      --signal: #e84b20;
+      --signal-dim: rgba(232,75,32,0.18);
+      --signal-glow: rgba(232,75,32,0.06);
+      --gold: #c9963a;
+      --cyan: #4bb8b8;
+      --font-head: 'Syne', sans-serif;
+      --font-serif: 'Crimson Pro', serif;
+      --font-mono: 'Azeret Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--void);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+      cursor: none;
+    }
+
+    a, button, [role="button"], input, label, select, textarea {
+      cursor: none;
+    }
+
+    /* ── CURSOR ── */
+    #cur-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid var(--signal);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: width .25s, height .25s, border-color .25s, opacity .3s;
+      opacity: 0;
+    }
+    #cur-dot {
+      position: fixed;
+      width: 5px; height: 5px;
+      background: var(--signal);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%,-50%);
+    }
+    body:hover #cur-ring { opacity: 1; }
+    #cur-ring.big {
+      width: 56px;
+      height: 56px;
+      border-color: var(--gold);
+    }
+
+    /* ── BACKGROUND GRID ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--wire) 1px, transparent 1px),
+        linear-gradient(90deg, var(--wire) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── SCANLINE ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.04) 2px,
+        rgba(0,0,0,0.04) 4px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── AMBIENT GLOW ── */
+    .glow-tl, .glow-br {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-tl {
+      width: 600px; height: 600px;
+      top: -200px; left: -200px;
+      background: radial-gradient(circle, rgba(232,75,32,0.05), transparent 70%);
+    }
+    .glow-br {
+      width: 500px; height: 500px;
+      bottom: -150px; right: -150px;
+      background: radial-gradient(circle, rgba(75,184,184,0.04), transparent 70%);
+    }
+
+    /* ── LAYOUT SHELL ── */
+    .shell {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 clamp(1.5rem, 4vw, 4rem);
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--wire-bright);
+      position: sticky;
+      top: 0;
+      background: rgba(10,10,11,0.88);
+      backdrop-filter: blur(16px);
+      z-index: 50;
+    }
+
+    .nav-id {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .nav-mark {
+      width: 28px; height: 28px;
+      border: 1px solid var(--signal);
+      transform: rotate(45deg);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .nav-mark span {
+      display: block;
+      width: 8px; height: 8px;
+      background: var(--signal);
+      transform: rotate(-45deg);
+    }
+
+    .nav-name {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-decoration: none;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::before {
+      content: '//';
+      margin-right: 0.35em;
+      color: var(--signal);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::before { opacity: 1; }
+
+    .nav-contact {
+      display: flex;
+      gap: 1.2rem;
+    }
+    .nav-contact a {
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-decoration: none;
+      border: 1px solid var(--ghost);
+      padding: 0.35rem 0.75rem;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .nav-contact a:hover { border-color: var(--signal); color: var(--signal); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: clamp(4rem, 10vh, 8rem) 0 clamp(4rem, 8vh, 6rem);
+      position: relative;
+    }
+
+    /* Technical annotation lines */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 3rem; right: 0;
+      width: 40%;
+      height: 1px;
+      background: linear-gradient(to left, transparent, var(--wire-bright));
+    }
+
+    .hero-label {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeIn 0.6s 0.1s forwards;
+    }
+    .hero-label::before {
+      content: '';
+      width: 2.5rem;
+      height: 1px;
+      background: var(--signal);
+    }
+    .hero-label span {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--signal);
+    }
+
+    .hero-name {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: clamp(3.5rem, 9vw, 9rem);
+      line-height: 0.88;
+      letter-spacing: -0.04em;
+      opacity: 0;
+      animation: slideUp 0.8s 0.2s cubic-bezier(0.2,0.8,0.2,1) forwards;
+      position: relative;
+    }
+
+    .hero-name .first { display: block; }
+    .hero-name .last {
+      display: block;
+      color: transparent;
+      -webkit-text-stroke: 1px var(--text);
+    }
+    .hero-name .accent {
+      position: absolute;
+      right: 0;
+      top: 0.1em;
+      font-family: var(--font-serif);
+      font-size: 0.22em;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--dim);
+      letter-spacing: 0.05em;
+      -webkit-text-stroke: 0;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+    }
+
+    .hero-bottom {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      margin-top: 3.5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--wire-bright);
+      opacity: 0;
+      animation: fadeIn 0.8s 0.55s forwards;
+    }
+
+    .hero-thesis {
+      font-family: var(--font-serif);
+      font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+      font-weight: 300;
+      line-height: 1.55;
+      color: rgba(232,230,224,0.75);
+      max-width: 46ch;
+    }
+
+    .hero-thesis em {
+      font-style: italic;
+      color: var(--text);
+    }
+
+    .hero-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      align-content: start;
+      border: 1px solid var(--wire-bright);
+    }
+
+    .meta-item {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--wire);
+      border-right: 1px solid var(--wire);
+    }
+    .meta-item:nth-child(even) { border-right: 0; }
+    .meta-item:nth-last-child(-n+2) { border-bottom: 0; }
+
+    .meta-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 0.35rem;
+    }
+    .meta-val {
+      font-size: 0.82rem;
+      color: var(--text);
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      margin-right: 0.5rem;
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── SECTION STRUCTURE ── */
+    section {
+      padding: clamp(3rem, 8vh, 6rem) 0;
+      border-top: 1px solid var(--wire-bright);
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 3rem;
+    }
+
+    .section-tag {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .section-num {
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--signal);
+      border: 1px solid var(--signal-dim);
+      padding: 0.25rem 0.5rem;
+    }
+
+    .section-title {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+      letter-spacing: -0.03em;
+    }
+
+    .section-link {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color 0.2s;
+    }
+    .section-link::after {
+      content: '→';
+      color: var(--signal);
+    }
+    .section-link:hover { color: var(--text); }
+
+    /* ── PROJECTS ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--wire-bright);
+    }
+
+    .project-card {
+      background: var(--deep);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--signal-glow), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .project-card:hover { background: var(--surface); }
+    .project-card:hover::before { opacity: 1; }
+
+    .project-card:hover .proj-arrow { transform: translate(4px, -4px); }
+
+    .proj-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+
+    .proj-index {
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      color: var(--signal);
+      font-family: var(--font-mono);
+    }
+
+    .proj-arrow {
+      color: var(--ghost);
+      font-size: 1rem;
+      transition: transform 0.25s, color 0.25s;
+    }
+    .project-card:hover .proj-arrow { color: var(--signal); }
+
+    .proj-title {
+      font-family: var(--font-head);
+      font-weight: 600;
+      font-size: clamp(1.1rem, 2vw, 1.45rem);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.8rem;
+      line-height: 1.2;
+    }
+
+    .proj-desc {
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.65;
+      color: rgba(232,230,224,0.55);
+    }
+
+    .proj-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .tag {
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.55rem;
+      border: 1px solid var(--ghost);
+      color: var(--dim);
+    }
+
+    /* ── EXPERIENCE ── */
+    .exp-list { display: grid; gap: 1px; background: var(--wire-bright); }
+
+    .exp-item {
+      background: var(--deep);
+      display: grid;
+      grid-template-columns: 3fr 1fr;
+      align-items: center;
+      padding: 2rem 2.5rem;
+      transition: background 0.25s;
+      gap: 2rem;
+    }
+
+    .exp-item:hover { background: var(--surface); }
+
+    .exp-role {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--signal);
+      margin-bottom: 0.5rem;
+    }
+
+    .exp-company {
+      font-family: var(--font-head);
+      font-weight: 600;
+      font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+      letter-spacing: -0.02em;
+    }
+
+    .exp-company a { color: inherit; text-decoration: none; }
+    .exp-company a:hover { color: var(--gold); }
+
+    .exp-desc {
+      margin-top: 0.5rem;
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--dim);
+      max-width: 55ch;
+      line-height: 1.6;
+    }
+
+    .exp-right { text-align: right; }
+
+    .exp-period {
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      color: var(--ghost);
+      text-transform: uppercase;
+    }
+
+    /* ── WRITING ── */
+    .writing-item {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 2rem;
+      align-items: center;
+      padding: 1.8rem 0;
+      border-bottom: 1px solid var(--wire);
+      text-decoration: none;
+      color: inherit;
+      transition: opacity 0.2s;
+    }
+    .writing-item:first-child { border-top: 1px solid var(--wire); }
+    .writing-item:hover { opacity: 0.7; }
+    .writing-item:hover .writing-arrow { transform: translate(4px, -4px); color: var(--signal); }
+
+    .writing-num {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--ghost);
+      width: 2rem;
+    }
+
+    .writing-title {
+      font-family: var(--font-serif);
+      font-size: clamp(1.2rem, 2.5vw, 1.65rem);
+      font-weight: 400;
+      font-style: italic;
+      letter-spacing: -0.01em;
+    }
+
+    .writing-note {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--dim);
+      margin-top: 0.25rem;
+    }
+
+    .writing-arrow {
+      color: var(--ghost);
+      transition: transform 0.25s, color 0.25s;
+      font-size: 1.1rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 4rem 0 3rem;
+      border-top: 1px solid var(--wire-bright);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .foot-name {
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      letter-spacing: -0.04em;
+      line-height: 0.9;
+      color: var(--ghost);
+    }
+
+    .foot-right {
+      text-align: right;
+    }
+
+    .foot-cta {
+      font-family: var(--font-head);
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--signal);
+      text-decoration: none;
+      border: 1px solid var(--signal);
+      padding: 0.8rem 1.6rem;
+      display: inline-block;
+      transition: background 0.2s, color 0.2s;
+      margin-bottom: 1.5rem;
+    }
+    .foot-cta:hover { background: var(--signal); color: var(--void); }
+
+    .foot-links {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: flex-end;
+      margin-top: 0.8rem;
+    }
+    .foot-links a {
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ghost);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .foot-links a:hover { color: var(--text); }
+
+    /* ── TECH CORNER DECORATION ── */
+    .corner-tl, .corner-br {
+      position: absolute;
+      width: 20px; height: 20px;
+      pointer-events: none;
+    }
+    .corner-tl {
+      top: 0; left: 0;
+      border-top: 1px solid var(--signal);
+      border-left: 1px solid var(--signal);
+    }
+    .corner-br {
+      bottom: 0; right: 0;
+      border-bottom: 1px solid var(--signal);
+      border-right: 1px solid var(--signal);
+    }
+
+    /* ── DIVIDER ── */
+    .divider-bar {
+      height: 2px;
+      background: linear-gradient(to right, var(--signal), var(--cyan), transparent);
+      margin: 0;
+      opacity: 0.5;
+    }
+
+    /* ── REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.65s cubic-bezier(0.2,0.8,0.2,1), transform 0.65s cubic-bezier(0.2,0.8,0.2,1);
+    }
+    .reveal.on { opacity: 1; transform: none; }
+
+    /* ── KEYFRAMES ── */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) {
+      .nav-links { display: none; }
+      .hero-bottom { grid-template-columns: 1fr; gap: 2.5rem; }
+      .hero-name .accent { display: none; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .exp-item { grid-template-columns: 1fr; }
+      .exp-right { text-align: left; }
+      footer { flex-direction: column; gap: 3rem; }
+      .foot-right { text-align: left; }
+      .foot-links { justify-content: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition-duration: 0.01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow-tl" aria-hidden="true"></div>
+  <div class="glow-br" aria-hidden="true"></div>
+  <div id="cur-ring" aria-hidden="true"></div>
+  <div id="cur-dot" aria-hidden="true"></div>
+
+  <div class="shell">
+
+    <!-- NAV -->
+    <nav>
+      <div class="nav-id">
+        <div class="nav-mark"><span></span></div>
+        <span class="nav-name">ARM</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#writing">Writing</a></li>
+      </ul>
+      <div class="nav-contact">
+        <a href="/cdn-cgi/l/email-protection#86e7f4ebf3f2efe3c6f3f1e7f2e3f4eae9e9a8e5e7" class="hoverable">Email</a>
+        <a href="https://linkedin.com/in/armutie" target="_blank" rel="noopener" class="hoverable">LinkedIn</a>
+        <a href="https://github.com/armutie" target="_blank" rel="noopener" class="hoverable">GitHub</a>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero">
+      <div class="hero-label">
+        <span>Mechatronics Engineering · University of Waterloo</span>
+      </div>
+
+      <h1 class="hero-name">
+        <span class="first">Abdur Rahman</span>
+        <span class="last">Mutie</span>
+        <span class="accent">Builder · Systems Thinker · Controls</span>
+      </h1>
+
+      <div class="hero-bottom">
+        <p class="hero-thesis">
+          I design and build systems that push toward
+          <em>embodied intelligence</em> — fast iteration
+          across hardware, software, and controls.
+          Physics first, abstraction second.
+        </p>
+        <div class="hero-meta">
+          <div class="meta-item">
+            <p class="meta-label">Status</p>
+            <p class="meta-val"><span class="status-dot"></span>Available for co-op</p>
+          </div>
+          <div class="meta-item">
+            <p class="meta-label">Program</p>
+            <p class="meta-val">Mechatronics Eng.</p>
+          </div>
+          <div class="meta-item">
+            <p class="meta-label">Institution</p>
+            <p class="meta-val">U of Waterloo</p>
+          </div>
+          <div class="meta-item">
+            <p class="meta-label">Focus</p>
+            <p class="meta-val">Robotics · Controls</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="divider-bar"></div>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+      <div class="section-head reveal">
+        <div class="section-tag">
+          <span class="section-num">01</span>
+          <h2 class="section-title">Selected Builds</h2>
+        </div>
+        <a href="projects/" class="section-link hoverable">View all</a>
+      </div>
+
+      <div class="projects-grid reveal">
+        <a href="projects/battlebot.html" class="project-card hoverable">
+          <div class="corner-tl"></div>
+          <div class="proj-top">
+            <span class="proj-index">PRJ — 001</span>
+            <span class="proj-arrow">↗</span>
+          </div>
+          <h3 class="proj-title">BattleBot — UW Competition</h3>
+          <p class="proj-desc">Designed and stress-tested through all competition rounds. Built for real impact loads, not just demos. Every gram justified, every joint chosen for failure mode.</p>
+          <div class="proj-tags">
+            <span class="tag">Mechanical</span>
+            <span class="tag">CAD</span>
+            <span class="tag">Fabrication</span>
+          </div>
+        </a>
+
+        <a href="https://github.com/Henro1708/TIC_Software_Challenge_S25" target="_blank" rel="noopener" class="project-card hoverable">
+          <div class="corner-tl"></div>
+          <div class="proj-top">
+            <span class="proj-index">PRJ — 002</span>
+            <span class="proj-arrow">↗</span>
+          </div>
+          <h3 class="proj-title">ROS2 Autonomous Navigation</h3>
+          <p class="proj-desc">Navigation stack logic for Toyota Innovation Challenge real-world scenarios. Path planning, sensor fusion, decision trees for dynamic environments.</p>
+          <div class="proj-tags">
+            <span class="tag">ROS2</span>
+            <span class="tag">Python</span>
+            <span class="tag">Robotics</span>
+          </div>
+        </a>
+
+        <a href="https://github.com/armutie/learning-chess" target="_blank" rel="noopener" class="project-card hoverable">
+          <div class="corner-tl"></div>
+          <div class="proj-top">
+            <span class="proj-index">PRJ — 003</span>
+            <span class="proj-arrow">↗</span>
+          </div>
+          <h3 class="proj-title">Python Chess Engine</h3>
+          <p class="proj-desc">Modular OOP architecture for extensible game state management and search behavior. Clean separation between rules, state, and strategy.</p>
+          <div class="proj-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Algorithms</span>
+            <span class="tag">OOP</span>
+          </div>
+        </a>
+
+        <a href="projects/rc-airplane.html" class="project-card hoverable">
+          <div class="corner-tl"></div>
+          <div class="proj-top">
+            <span class="proj-index">PRJ — 004</span>
+            <span class="proj-arrow">↗</span>
+          </div>
+          <h3 class="proj-title">Autonomous RC Aircraft</h3>
+          <p class="proj-desc">Active build — focused on avionics reliability, control loop stability, and iteration velocity. Flying before perfect beats perfect that never flies.</p>
+          <div class="proj-tags">
+            <span class="tag">Avionics</span>
+            <span class="tag">Controls</span>
+            <span class="tag">In Progress</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience">
+      <div class="section-head reveal">
+        <div class="section-tag">
+          <span class="section-num">02</span>
+          <h2 class="section-title">Experience</h2>
+        </div>
+      </div>
+
+      <div class="exp-list reveal">
+        <div class="exp-item hoverable">
+          <div>
+            <p class="exp-role">Engineering Co-op</p>
+            <h3 class="exp-company"><a href="https://www.martinrea.com/about-us/" target="_blank" rel="noopener">Martinrea</a></h3>
+            <p class="exp-desc">Automotive systems engineering in a real production environment. Manufacturing constraints, tolerance stacks, and the discipline of shipping physical things.</p>
+          </div>
+          <div class="exp-right">
+            <p class="exp-period">Co-op Term</p>
+          </div>
+        </div>
+
+        <div class="exp-item hoverable">
+          <div>
+            <p class="exp-role">AI Engineering Intern</p>
+            <h3 class="exp-company"><a href="https://vectorglobe.com/about-us/" target="_blank" rel="noopener">VectorGlobe</a></h3>
+            <p class="exp-desc">Applied AI systems work — bridging model capabilities with engineering constraints. Building things that work in production, not just in notebooks.</p>
+          </div>
+          <div class="exp-right">
+            <p class="exp-period">Internship</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WRITING -->
+    <section id="writing">
+      <div class="section-head reveal">
+        <div class="section-tag">
+          <span class="section-num">03</span>
+          <h2 class="section-title">Writing</h2>
+        </div>
+        <a href="writing/" class="section-link hoverable">Coming soon</a>
+      </div>
+
+      <div class="reveal">
+        <div class="writing-item hoverable">
+          <span class="writing-num">--</span>
+          <div>
+            <p class="writing-title">Coming Soon</p>
+            <p class="writing-note">Notes and build logs will live here.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="reveal">
+      <div class="foot-name">ARM<br>UTIE</div>
+      <div class="foot-right">
+        <a href="/cdn-cgi/l/email-protection#19786b746c6d707c596c6e786d7c6b757676377a78" class="foot-cta hoverable">Get in touch →</a>
+        <div class="foot-links">
+          <a href="https://linkedin.com/in/armutie" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://github.com/armutie" target="_blank" rel="noopener">GitHub</a>
+          <a href="/cdn-cgi/l/email-protection#c9a8bba4bcbda0ac89bcbea8bdacbba5a6a6e7aaa8">Email</a>
+        </div>
+        <p style="margin-top:1rem;font-size:0.62rem;letter-spacing:0.08em;color:var(--ghost);">Available for deep engineering work & ambitious ideas.</p>
+      </div>
+    </footer>
+
+  </div><!-- /shell -->
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // Custom cursor
+    const ring = document.getElementById('cur-ring');
+    const dot = document.getElementById('cur-dot');
+    let rx = -100, ry = -100, dx = -100, dy = -100;
+    let trx = -100, try_ = -100;
+
+    window.addEventListener('pointermove', e => { trx = e.clientX; try_ = e.clientY; dx = e.clientX; dy = e.clientY; });
+
+    function cursorTick() {
+      rx += (trx - rx) * 0.12;
+      ry += (try_ - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      dot.style.left = dx + 'px';
+      dot.style.top = dy + 'px';
+      requestAnimationFrame(cursorTick);
+    }
+    if (window.matchMedia('(pointer: fine)').matches) {
+      requestAnimationFrame(cursorTick);
+      document.querySelectorAll('a, button, [role="button"], .hoverable').forEach(el => {
+        el.addEventListener('mouseenter', () => ring.classList.add('big'));
+        el.addEventListener('mouseleave', () => ring.classList.remove('big'));
+      });
+    } else {
+      ring.style.display = 'none';
+      dot.style.display = 'none';
+    }
+
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('on'), 60);
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    revealEls.forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>

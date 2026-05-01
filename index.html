@@ -24,8 +24,24 @@
     <nav class="nav">
         <a href="/" class="nav-name">armutie</a>
         <div class="nav-links">
-            <a href="#projects" class="nav-link">projects</a>
+            <a href="projects/" class="nav-link">projects</a>
             <a href="#experience" class="nav-link">experience</a>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light mode">
+                <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5A8.5 8.5 0 1 0 20.5 14.5Z" />
+                </svg>
+                <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4" />
+                    <path d="M12 2V4" />
+                    <path d="M12 20V22" />
+                    <path d="M4.93 4.93L6.34 6.34" />
+                    <path d="M17.66 17.66L19.07 19.07" />
+                    <path d="M2 12H4" />
+                    <path d="M20 12H22" />
+                    <path d="M4.93 19.07L6.34 17.66" />
+                    <path d="M17.66 6.34L19.07 4.93" />
+                </svg>
+            </button>
         </div>
     </nav>
 
@@ -34,7 +50,7 @@
             <div class="status-line">
                 <span class="status-dot"></span>
                 <span>Mechatronics Engineering</span>
-                <a href="https://uwaterloo.ca" target="_blank" rel="noopener noreferrer" class="status-badge">@ UWaterloo</a>
+                <a href="https://uwaterloo.ca/future-students/programs/mechatronics-engineering" target="_blank" rel="noopener noreferrer" class="status-badge" aria-label="University of Waterloo Mechatronics Engineering program">@ UWaterloo</a>
             </div>
             <h1 class="hero-title">Abdur Rahman Mutie</h1>
             <p class="tagline">My goal is to accelerate the transition to <span class="accent">embodied
@@ -56,30 +72,37 @@
                 <li>-> Currently building an <a href="projects/rc-airplane.html" class="sweep-link">autonomous RC
                         aircraft</a></li>
             </ul>
+            <a href="projects/" class="see-all-projects">See all projects -></a>
         </section>
 
         <section id="experience" class="experience-section">
             <h2>Previously</h2>
 
-            <a href="https://www.martinrea.com/about-us/" target="_blank" rel="noopener noreferrer" class="job-item">
+            <div class="job-item">
                 <span class="job-arrow">-></span>
                 <span class="job-role">Engineering Co-op</span>
-                <img src="src/martinrea.webp" alt="Martinrea" class="job-logo-inline">
-                <span class="job-company sweep-link">Martinrea</span>
-            </a>
+                <a href="https://www.martinrea.com/about-us/" target="_blank" rel="noopener noreferrer"
+                    class="job-company-link">
+                    <img src="src/martinrea.webp" alt="Martinrea" class="job-logo-inline" loading="lazy"
+                        decoding="async">
+                    <span class="job-company sweep-link">Martinrea</span>
+                </a>
+            </div>
 
-            <a href="https://vectorglobe.com/about-us/" target="_blank" rel="noopener noreferrer" class="job-item">
+            <div class="job-item">
                 <span class="job-arrow">-></span>
                 <span class="job-role">AI Engineering Intern</span>
-                <img src="src/vectorglobe_logo.jpg" alt="VectorGlobe" class="job-logo-inline">
-                <span class="job-company sweep-link">VectorGlobe</span>
-            </a>
+                <a href="https://vectorglobe.com/about-us/" target="_blank" rel="noopener noreferrer"
+                    class="job-company-link">
+                    <img src="src/vectorglobe_logo.jpg" alt="VectorGlobe" class="job-logo-inline" loading="lazy"
+                        decoding="async">
+                    <span class="job-company sweep-link">VectorGlobe</span>
+                </a>
+            </div>
         </section>
-
-        <section class="skills-section">
-            <h2>Skills</h2>
-            <p class="skills-text">C/C++, Python, MATLAB, Arduino | SolidWorks, AutoCAD, ROS2 | LangChain, TensorFlow
-            </p>
+        <section class="writing-section">
+            <h2>Writing</h2>
+            <p class="section-note">Coming Soon</p>
         </section>
 
     <footer class="links">
