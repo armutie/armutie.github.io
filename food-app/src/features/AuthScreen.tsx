@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Camera, Check, ClipboardList, Sparkles } from "lucide-react";
+import { ArrowRight, Camera, Check, ClipboardList, Pencil, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -9,15 +9,17 @@ import { Button } from "@/components/ui/button";
 import type { AuthService } from "@/services/interfaces";
 
 const emailSchema = z.object({
-  email: z.string().email("Enter a valid email address."),
+  email: z.string().trim().email("Enter a valid email address."),
 });
 
 export function AuthScreen({ auth }: { auth: AuthService }) {
-  const [sent, setSent] = useState(false);
+  const [sentEmail, setSentEmail] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState("");
   const {
     register,
     handleSubmit,
+    setFocus,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<z.infer<typeof emailSchema>>({
     resolver: zodResolver(emailSchema),
@@ -26,9 +28,10 @@ export function AuthScreen({ auth }: { auth: AuthService }) {
 
   const submit = handleSubmit(async ({ email }) => {
     setSubmitError("");
+    const normalizedEmail = email.trim().toLowerCase();
     try {
-      await auth.sendMagicLink(email);
-      setSent(true);
+      await auth.sendMagicLink(normalizedEmail);
+      setSentEmail(normalizedEmail);
     } catch (error) {
       console.error("Authentication failed", error);
       setSubmitError("The sign-in email could not be sent. Check the address and try again.");
@@ -52,12 +55,26 @@ export function AuthScreen({ auth }: { auth: AuthService }) {
           <div><Sparkles /><span><strong>Review</strong> the AI estimate</span></div>
           <div><ClipboardList /><span><strong>Correct and track</strong> what matters</span></div>
         </div>
-        {sent ? (
+        {sentEmail ? (
           <div className="auth-sent" role="status">
             <Check aria-hidden="true" />
             <div>
               <strong>Check your inbox</strong>
-              <p>Use the secure link in the email to finish signing in.</p>
+              <p>
+                We sent a secure sign-in link to <strong className="auth-sent-email">{sentEmail}</strong>.
+              </p>
+              <Button
+                variant="ghost"
+                size="small"
+                onClick={() => {
+                  setValue("email", sentEmail);
+                  setSentEmail(null);
+                  window.setTimeout(() => setFocus("email"), 0);
+                }}
+              >
+                <Pencil size={15} />
+                Change email
+              </Button>
             </div>
           </div>
         ) : (

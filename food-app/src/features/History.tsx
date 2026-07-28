@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Utensils } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Utensils } from "lucide-react";
 import { useMemo, useState } from "react";
 import { MealRow } from "@/components/MealRow";
 import { NutrientSummary } from "@/components/NutrientSummary";
@@ -16,6 +16,12 @@ export function History() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const timeZone = profile.data?.timeZone ?? "America/Toronto";
   const day = selectedDate ?? todayKey(timeZone);
+  const selectedDateText = new Intl.DateTimeFormat("en-CA", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(`${day}T12:00:00Z`));
   const grouped = useMemo(() => groupMealsByDay(meals.data ?? [], timeZone), [meals.data, timeZone]);
   const dayMeals = grouped[day] ?? [];
   const totals = dayMeals.reduce(
@@ -43,8 +49,17 @@ export function History() {
           <h1>History</h1>
         </div>
         <label className="date-picker">
-          <span className="sr-only">Choose date</span>
-          <input type="date" value={day} onChange={(event) => setSelectedDate(event.target.value)} />
+          <span className="date-picker-label">Date</span>
+          <span className="date-picker-control">
+            <CalendarDays size={18} aria-hidden="true" />
+            <span>{selectedDateText}</span>
+            <input
+              type="date"
+              aria-label="Choose history date"
+              value={day}
+              onChange={(event) => setSelectedDate(event.target.value)}
+            />
+          </span>
         </label>
       </div>
 

@@ -9,10 +9,10 @@ import {
   ChevronUp,
   Copy,
   ImagePlus,
+  Images,
   Info,
   LoaderCircle,
   Plus,
-  RefreshCw,
   Search,
   Sparkles,
   Trash2,
@@ -97,7 +97,8 @@ export function AddMealFlow() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [analysisMessageIndex, setAnalysisMessageIndex] = useState(0);
   const clientRequestId = useRef(crypto.randomUUID());
-  const fileInput = useRef<HTMLInputElement>(null);
+  const cameraInput = useRef<HTMLInputElement>(null);
+  const libraryInput = useRef<HTMLInputElement>(null);
 
   const now = new Date();
   const defaultMealType = now.getHours() < 11 ? "breakfast" : now.getHours() < 15 ? "lunch" : now.getHours() < 21 ? "dinner" : "snack";
@@ -169,6 +170,12 @@ export function AddMealFlow() {
     form.setValue("referenceType", "canadian_loonie");
     form.setValue("name", "Herb chicken plate");
     form.setValue("mealType", "lunch");
+  };
+
+  const handlePhotoInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) void choosePhoto(file);
+    event.target.value = "";
   };
 
   const startAnalysis = form.handleSubmit(async (values) => {
@@ -255,7 +262,14 @@ export function AddMealFlow() {
             <div className="photo-preview">
               <img src={photo.previewUrl} alt="Meal ready for analysis" />
               <div className="photo-actions">
-                <Button variant="secondary" onClick={() => fileInput.current?.click()}><RefreshCw size={17} /> Replace</Button>
+                <Button variant="secondary" size="small" onClick={() => cameraInput.current?.click()}>
+                  <Camera size={16} />
+                  Take photo
+                </Button>
+                <Button variant="secondary" size="small" onClick={() => libraryInput.current?.click()}>
+                  <Images size={16} />
+                  Choose from library
+                </Button>
                 <Button
                   variant="secondary"
                   size="icon"
@@ -273,22 +287,34 @@ export function AddMealFlow() {
               <h2>Add a clear meal photo</h2>
               <p>Photograph from above when possible, with the whole plate in frame.</p>
               <div className="photo-choice-actions">
-                <Button onClick={() => fileInput.current?.click()}><Camera size={18} /> Take or choose photo</Button>
+                <Button onClick={() => cameraInput.current?.click()}>
+                  <Camera size={18} />
+                  Take photo
+                </Button>
+                <Button variant="secondary" onClick={() => libraryInput.current?.click()}>
+                  <Images size={18} />
+                  Choose from library
+                </Button>
                 {services.mode === "demo" && <Button variant="secondary" onClick={() => void loadSample()}><Sparkles size={18} /> Use demo plate</Button>}
               </div>
             </div>
           )}
           <input
-            ref={fileInput}
+            ref={cameraInput}
             className="visually-hidden"
             type="file"
-            accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
+            accept="image/*"
             capture="environment"
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              if (file) void choosePhoto(file);
-              event.currentTarget.value = "";
-            }}
+            data-photo-source="camera"
+            onChange={handlePhotoInput}
+          />
+          <input
+            ref={libraryInput}
+            className="visually-hidden"
+            type="file"
+            accept="image/*"
+            data-photo-source="library"
+            onChange={handlePhotoInput}
           />
           {photoError && <p className="photo-error" role="alert"><AlertTriangle size={17} /> {photoError}</p>}
           <p className="photo-support"><Upload size={15} /> JPEG, PNG, WebP, HEIC or HEIF · up to 20 MB</p>

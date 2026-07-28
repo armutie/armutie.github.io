@@ -73,6 +73,11 @@ try {
   await page.goto(baseUrl, { waitUntil: "networkidle" });
   await page.getByRole("heading", { name: "Today’s plate" }).waitFor();
   assert(await page.getByText("Demo mode").isVisible(), "Demo mode must be visibly labelled.");
+  await page.getByRole("button", { name: "Open account menu for demo@plateful.local" }).click();
+  await page.getByText("demo@plateful.local").waitFor();
+  await page.getByRole("menuitem", { name: "Sign out" }).waitFor();
+  await page.keyboard.press("Escape");
+  await page.getByRole("menuitem", { name: "Sign out" }).waitFor({ state: "hidden" });
   assert(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), "Dashboard overflows the mobile viewport.");
   await page.screenshot({ path: resolve(screenshotDir, "dashboard-mobile.png"), fullPage: true });
 
@@ -81,6 +86,11 @@ try {
   await page.setViewportSize({ width: 375, height: 812 });
 
   await page.getByRole("link", { name: "Add meal" }).click();
+  await page.getByRole("button", { name: "Take photo" }).waitFor();
+  await page.getByRole("button", { name: "Choose from library" }).waitFor();
+  assert(await page.locator('input[data-photo-source="camera"]').getAttribute("capture") === "environment", "Camera input must request the rear camera.");
+  assert(await page.locator('input[data-photo-source="library"]').getAttribute("capture") === null, "Library input must not request camera capture.");
+  await page.screenshot({ path: resolve(screenshotDir, "add-meal-mobile.png"), fullPage: false });
   await page.getByRole("button", { name: "Use demo plate" }).click();
   await page.getByAltText("Meal ready for analysis").waitFor();
   await page.getByRole("button", { name: "Analyze meal" }).click();
@@ -106,7 +116,10 @@ try {
 
   await page.getByRole("link", { name: "History" }).click();
   await page.getByRole("heading", { name: "History" }).waitFor();
+  await page.getByText("Date", { exact: true }).waitFor();
+  await page.getByLabel("Choose history date").waitFor();
   await page.getByText("Herb chicken plate").first().waitFor();
+  await page.screenshot({ path: resolve(screenshotDir, "history-mobile.png"), fullPage: false });
 
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.getByRole("link", { name: "Today" }).click();

@@ -64,7 +64,11 @@ export function App() {
 
   return (
     <AppContext.Provider value={context!}>
-      <AppShell demoMode={services.mode === "demo"} onSignOut={() => void services.auth.signOut()}>
+      <AppShell
+        demoMode={services.mode === "demo"}
+        email={user.email}
+        onSignOut={() => void services.auth.signOut()}
+      >
         {page}
       </AppShell>
     </AppContext.Provider>
