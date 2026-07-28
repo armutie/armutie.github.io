@@ -21,6 +21,7 @@ export class ServiceError extends Error {
     public readonly code: ServiceErrorCode,
     message: string,
     public readonly cause?: unknown,
+    public readonly requestId?: string,
   ) {
     super(message);
     this.name = "ServiceError";
@@ -28,7 +29,9 @@ export class ServiceError extends Error {
 }
 
 export function serviceErrorMessage(error: unknown) {
-  if (error instanceof ServiceError) return error.message;
+  if (error instanceof ServiceError) {
+    return error.requestId ? `${error.message} Reference: ${error.requestId}.` : error.message;
+  }
   if (!navigator.onLine) return "You appear to be offline. Reconnect and try again.";
   return "Something went wrong. Try again.";
 }

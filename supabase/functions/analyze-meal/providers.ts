@@ -1,6 +1,7 @@
 import { geminiResponseJsonSchema, nutrientSchema, visionResultSchema, type VisionResult } from "./schemas.ts";
 
 export type MealAnalysisInput = {
+  requestId: string;
   base64Image: string;
   mimeType: string;
   mealType: string;
@@ -48,6 +49,83 @@ export class ProviderError extends Error {
   }
 }
 
+const sensitiveDiagnosticKeys = new Set([
+  "apikey",
+  "authorization",
+  "headers",
+  "inlinedata",
+  "imagedata",
+  "base64image",
+  "data",
+  "userdata",
+  "user",
+  "email",
+  "token",
+  "accesstoken",
+  "refreshtoken",
+  "idtoken",
+  "secret",
+]);
+
+function sanitizeDiagnosticString(value: string) {
+  return value
+    .replace(/AIza[A-Za-z0-9_-]{20,}/g, "[redacted-api-key]")
+    .replace(/Bearer\s+[A-Za-z0-9._~+/=-]+/gi, "Bearer [redacted]")
+    .replace(/data:image\/[^;]+;base64,[A-Za-z0-9+/=]+/gi, "[redacted-image-data]");
+}
+
+export function sanitizeProviderDiagnostic(value: unknown): unknown {
+  if (typeof value === "string") return sanitizeDiagnosticString(value);
+  if (Array.isArray(value)) return value.map(sanitizeProviderDiagnostic);
+  if (!value || typeof value !== "object") return value;
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, entry]) => {
+      const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+      if (
+        sensitiveDiagnosticKeys.has(normalizedKey)
+        || normalizedKey.includes("authorization")
+        || normalizedKey.includes("base64")
+        || normalizedKey.includes("imagedata")
+        || normalizedKey.includes("userdata")
+      ) {
+        return [key, "[redacted]"];
+      }
+      return [key, sanitizeProviderDiagnostic(entry)];
+    }),
+  );
+}
+
+type GeminiInteractionResponse = {
+  status?: string;
+  output_text?: string;
+  steps?: Array<{
+    type?: string;
+    status?: string;
+    content?: Array<{
+      type?: string;
+      text?: string;
+    }>;
+    error?: unknown;
+  }>;
+};
+
+function interactionOutputText(payload: GeminiInteractionResponse) {
+  if (typeof payload.output_text === "string" && payload.output_text.length > 0) {
+    return payload.output_text;
+  }
+
+  const modelOutput = payload.steps
+    ?.slice()
+    .reverse()
+    .find((step) => step.type === "model_output");
+  const text = modelOutput?.content
+    ?.filter((content) => content.type === "text" && typeof content.text === "string")
+    .map((content) => content.text)
+    .join("");
+  return text || undefined;
+}
+
 export class GeminiMealVisionProvider implements MealVisionProvider {
   constructor(
     private readonly apiKey: string,
@@ -65,35 +143,54 @@ export class GeminiMealVisionProvider implements MealVisionProvider {
       "Identify only foods plausibly visible. Estimate each visible serving weight in grams and provide a wide, honest range.",
       "Do not claim to see invisible ingredients or exact oil, butter, sugar, cream, sauce, filling, density, or hidden food.",
       "List those unknowns as uncertain ingredients or assumptions. Ask only questions that would materially improve the result.",
+      "For a follow-up question that is not tied to one food, use an empty relatedFoodTemporaryId string.",
       "The reference object is only an approximate visible scale cue; it cannot establish hidden depth or exact volume.",
       "Use short stable temporary IDs such as food-1. Return only the requested structured object.",
     ].join("\n");
 
     try {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(this.model)}:generateContent?key=${encodeURIComponent(this.apiKey)}`,
+        "https://generativelanguage.googleapis.com/v1beta/interactions",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": this.apiKey,
+            "Api-Revision": "2026-05-20",
+          },
           signal: controller.signal,
           body: JSON.stringify({
-            contents: [{
-              role: "user",
-              parts: [
-                { text: prompt },
-                { inlineData: { mimeType: input.mimeType, data: input.base64Image } },
-              ],
-            }],
-            generationConfig: {
-              responseMimeType: "application/json",
-              responseJsonSchema: geminiResponseJsonSchema,
+            model: this.model,
+            store: false,
+            input: [
+              { type: "text", text: prompt },
+              {
+                type: "image",
+                data: input.base64Image,
+                mime_type: input.mimeType,
+              },
+            ],
+            response_format: {
+              type: "text",
+              mime_type: "application/json",
+              schema: geminiResponseJsonSchema,
             },
           }),
         },
       );
       if (!response.ok) {
-        const detail = await response.text();
-        console.error("Gemini request failed", response.status, detail.slice(0, 500));
+        const responseBody = await response.text();
+        let parsedError: unknown;
+        try {
+          parsedError = JSON.parse(responseBody);
+        } catch {
+          parsedError = { unparsedErrorBody: responseBody };
+        }
+        console.error("Gemini request failed", JSON.stringify({
+          requestId: input.requestId,
+          httpStatus: response.status,
+          response: sanitizeProviderDiagnostic(parsedError),
+        }));
         if ([400, 401, 403, 404].includes(response.status)) {
           throw new ProviderError(
             "provider-configuration",
@@ -109,8 +206,17 @@ export class GeminiMealVisionProvider implements MealVisionProvider {
         }
         throw new ProviderError("unavailable", "The vision provider is temporarily unavailable.");
       }
-      const payload = await response.json();
-      const text = payload?.candidates?.[0]?.content?.parts?.[0]?.text;
+      const payload = await response.json() as GeminiInteractionResponse;
+      const failedStep = payload.steps?.find((step) => step.status === "failed" || step.error);
+      if (payload.status === "failed" || failedStep) {
+        console.error("Gemini interaction failed", JSON.stringify({
+          requestId: input.requestId,
+          httpStatus: response.status,
+          response: sanitizeProviderDiagnostic(payload),
+        }));
+        throw new ProviderError("unavailable", "The vision provider could not complete the analysis.");
+      }
+      const text = interactionOutputText(payload);
       if (!text) {
         throw new ProviderError("refusal", "The vision provider could not identify food in this image.", 422);
       }

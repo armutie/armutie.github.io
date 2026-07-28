@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { serviceErrorMessage } from "@/services/errors";
 import { createVisionServiceError } from "@/services/supabase";
 
 describe("vision provider error handling", () => {
@@ -28,5 +29,18 @@ describe("vision provider error handling", () => {
       code,
       message,
     });
+  });
+
+  it("preserves and displays the deployed request correlation ID", () => {
+    const error = createVisionServiceError(
+      "provider-configuration",
+      new Error("provider failure"),
+      "e7f3be34-8fd3-4d3c-9d44-6a4605649858",
+    );
+
+    expect(error.requestId).toBe("e7f3be34-8fd3-4d3c-9d44-6a4605649858");
+    expect(serviceErrorMessage(error)).toContain(
+      "Reference: e7f3be34-8fd3-4d3c-9d44-6a4605649858.",
+    );
   });
 });

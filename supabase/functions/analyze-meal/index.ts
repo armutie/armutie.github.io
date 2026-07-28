@@ -20,14 +20,22 @@ function corsHeaders(origin: string | null) {
     "Access-Control-Allow-Origin": allowed,
     "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Expose-Headers": "X-Request-ID",
     "Vary": "Origin",
   };
 }
 
-function json(body: unknown, status: number, origin: string | null) {
-  return new Response(JSON.stringify(body), {
+function json(body: unknown, status: number, origin: string | null, requestId: string) {
+  const responseBody = body && typeof body === "object" && !Array.isArray(body)
+    ? { ...body, requestId }
+    : body;
+  return new Response(JSON.stringify(responseBody), {
     status,
-    headers: { ...corsHeaders(origin), "Content-Type": "application/json" },
+    headers: {
+      ...corsHeaders(origin),
+      "Content-Type": "application/json",
+      "X-Request-ID": requestId,
+    },
   });
 }
 
@@ -43,59 +51,65 @@ function base64ToBytes(base64: string) {
 }
 
 Deno.serve(async (request) => {
+  const requestId = crypto.randomUUID();
   const origin = request.headers.get("Origin");
-  if (request.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(origin) });
-  if (request.method !== "POST") return json({ error: "Method not allowed." }, 405, origin);
-  if (origin && !allowedOrigins.includes(origin)) return json({ error: "Origin not allowed." }, 403, origin);
+  const respond = (body: unknown, status: number) => json(body, status, origin, requestId);
+  if (request.method === "OPTIONS") {
+    return new Response("ok", {
+      headers: { ...corsHeaders(origin), "X-Request-ID": requestId },
+    });
+  }
+  if (request.method !== "POST") return respond({ error: "Method not allowed." }, 405);
+  if (origin && !allowedOrigins.includes(origin)) return respond({ error: "Origin not allowed." }, 403);
 
   const authorization = request.headers.get("Authorization");
-  if (!authorization) return json({ error: "Authentication required." }, 401, origin);
+  if (!authorization) return respond({ error: "Authentication required." }, 401);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!supabaseUrl || !anonKey || !serviceRoleKey) {
     console.error("Supabase function secrets are incomplete.");
-    return json({
+    return respond({
       error: "Server configuration is incomplete.",
       code: "provider-configuration",
-    }, 500, origin);
+    }, 500);
   }
 
   const userClient = createClient(supabaseUrl, anonKey, {
     global: { headers: { Authorization: authorization } },
   });
   const { data: userData, error: userError } = await userClient.auth.getUser();
-  if (userError || !userData.user) return json({ error: "Your session has expired. Sign in again." }, 401, origin);
+  if (userError || !userData.user) return respond({ error: "Your session has expired. Sign in again." }, 401);
 
   let rawBody: unknown;
   try {
     rawBody = await request.json();
   } catch {
-    return json({ error: "Request body must be valid JSON." }, 400, origin);
+    return respond({ error: "Request body must be valid JSON." }, 400);
   }
 
   const searchRequest = nutritionSearchRequestSchema.safeParse(rawBody);
   if (searchRequest.success) {
     try {
       const matches = await createNutritionProvider().searchFoods(searchRequest.data.query);
-      return json({ matches }, 200, origin);
+      return respond({ matches }, 200);
     } catch (error) {
       console.error("Nutrition search error", error instanceof Error ? error.message : error);
-      return json({ error: "Nutrition search is temporarily unavailable." }, 502, origin);
+      return respond({ error: "Nutrition search is temporarily unavailable." }, 502);
     }
   }
 
   const parsed = analyzeRequestSchema.safeParse(rawBody);
   if (!parsed.success) {
-    return json({ error: "The analysis request is invalid.", fields: parsed.error.flatten() }, 400, origin);
+    return respond({ error: "The analysis request is invalid.", fields: parsed.error.flatten() }, 400);
   }
 
   const input = parsed.data;
   const image = dataUrlParts(input.imageDataUrl);
-  if (image.mimeType !== input.mimeType) return json({ error: "Image type does not match its content." }, 400, origin);
+  if (image.mimeType !== input.mimeType) return respond({ error: "Image type does not match its content." }, 400);
   const bytes = base64ToBytes(image.base64);
-  if (bytes.byteLength > 3_000_000) return json({ error: "The prepared image is too large." }, 413, origin);
+  if (bytes.byteLength > 3_000_000) return respond({ error: "The prepared image is too large." }, 413);
 
   const admin = createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },
@@ -106,10 +120,10 @@ Deno.serve(async (request) => {
     .upload(imagePath, bytes, { contentType: image.mimeType, upsert: false });
   if (uploadError) {
     console.error("Image upload failed", uploadError.message);
-    return json({
+    return respond({
       error: "The photo could not be uploaded. Try again.",
       code: "upload",
-    }, 502, origin);
+    }, 502);
   }
 
   try {
@@ -126,6 +140,7 @@ Deno.serve(async (request) => {
       : "No reference object was selected.";
 
     const vision = await createVisionProvider().analyzeMeal({
+      requestId,
       base64Image: image.base64,
       mimeType: image.mimeType,
       mealType: input.mealType,
@@ -149,25 +164,25 @@ Deno.serve(async (request) => {
       const { error: deleteError } = await admin.storage.from("meal-images").remove([imagePath]);
       if (deleteError) {
         console.error("Temporary image deletion failed", deleteError.message);
-        return json({
+        return respond({
           error: "Analysis completed, but the temporary photo could not be deleted. Please retry.",
           code: "upload",
-        }, 502, origin);
+        }, 502);
       }
     }
 
-    return json({
+    return respond({
       ...vision,
       foods,
       imagePath: input.imageRetention === "retain" ? imagePath : null,
-    }, 200, origin);
+    }, 200);
   } catch (error) {
     const providerError = error instanceof ProviderError ? error : null;
     console.error("Meal analysis error", error instanceof Error ? error.message : error);
     await admin.storage.from("meal-images").remove([imagePath]);
-    return json({
+    return respond({
       error: providerError?.message ?? "Meal analysis is temporarily unavailable.",
       code: providerError?.code ?? "unknown",
-    }, providerError?.status ?? 502, origin);
+    }, providerError?.status ?? 502);
   }
 });

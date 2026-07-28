@@ -130,12 +130,16 @@ const VISION_ERROR_DETAILS: Record<string, { code: ServiceErrorCode; message: st
   },
 };
 
-export function createVisionServiceError(providerCode: string, cause: unknown) {
+export function createVisionServiceError(
+  providerCode: string,
+  cause: unknown,
+  requestId?: string,
+) {
   const detail = VISION_ERROR_DETAILS[providerCode] ?? {
     code: "unknown" as const,
     message: "The meal could not be analyzed. Check your connection and try again.",
   };
-  return new ServiceError(detail.code, detail.message, cause);
+  return new ServiceError(detail.code, detail.message, cause, requestId);
 }
 
 class SupabaseVisionProvider implements MealVisionProvider {
@@ -155,16 +159,18 @@ class SupabaseVisionProvider implements MealVisionProvider {
     });
     if (error) {
       let providerCode = "unknown";
+      let requestId: string | undefined;
       const context = (error as { context?: Response }).context;
       if (context) {
         try {
-          const detail = await context.clone().json() as { code?: string };
+          const detail = await context.clone().json() as { code?: string; requestId?: string };
           providerCode = detail.code ?? providerCode;
+          requestId = detail.requestId;
         } catch {
           // Some network and gateway errors do not include a JSON body.
         }
       }
-      throw createVisionServiceError(providerCode, error);
+      throw createVisionServiceError(providerCode, error, requestId);
     }
     const parsed = mealAnalysisResultSchema.safeParse(data);
     if (!parsed.success) {

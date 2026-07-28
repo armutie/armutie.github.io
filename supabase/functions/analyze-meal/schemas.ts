@@ -7,7 +7,7 @@ export const nutrientSchema = z.object({
   sugar: z.number().min(0),
   fat: z.number().min(0),
   fibre: z.number().min(0),
-});
+}).strict();
 
 export const visionFoodSchema = z.object({
   temporaryId: z.string().min(1),
@@ -20,7 +20,7 @@ export const visionFoodSchema = z.object({
   visibleIngredients: z.array(z.string().max(100)).max(30),
   uncertainIngredients: z.array(z.string().max(100)).max(30),
   assumptions: z.array(z.string().max(300)).max(20),
-}).refine((food) => food.minimumWeightGrams <= food.estimatedWeightGrams, {
+}).strict().refine((food) => food.minimumWeightGrams <= food.estimatedWeightGrams, {
   message: "The minimum weight must not exceed the estimate.",
 }).refine((food) => food.estimatedWeightGrams <= food.maximumWeightGrams, {
   message: "The estimate must not exceed the maximum weight.",
@@ -32,17 +32,17 @@ export const visionResultSchema = z.object({
     type: z.string(),
     detected: z.boolean(),
     confidence: z.number().min(0).max(1),
-  }),
+  }).strict(),
   foods: z.array(visionFoodSchema).min(1).max(30),
   followUpQuestions: z.array(z.object({
     id: z.string(),
     question: z.string().max(300),
     options: z.array(z.string().max(100)).min(2).max(8),
     relatedFoodTemporaryId: z.string().nullable(),
-  })).max(8),
+  }).strict()).max(8),
   overallConfidence: z.number().min(0).max(1),
   warnings: z.array(z.string().max(300)).max(20),
-});
+}).strict();
 
 export type VisionResult = z.infer<typeof visionResultSchema>;
 
@@ -94,13 +94,11 @@ export const geminiResponseJsonSchema = {
       properties: {
         type: { type: "string" },
         detected: { type: "boolean" },
-        confidence: { type: "number", minimum: 0, maximum: 1 },
+        confidence: { type: "number" },
       },
     },
     foods: {
       type: "array",
-      minItems: 1,
-      maxItems: 30,
       items: {
         type: "object",
         additionalProperties: false,
@@ -120,10 +118,10 @@ export const geminiResponseJsonSchema = {
           temporaryId: { type: "string" },
           name: { type: "string" },
           description: { type: "string" },
-          estimatedWeightGrams: { type: "number", minimum: 0.1, maximum: 5000 },
-          minimumWeightGrams: { type: "number", minimum: 0.1, maximum: 5000 },
-          maximumWeightGrams: { type: "number", minimum: 0.1, maximum: 5000 },
-          confidence: { type: "number", minimum: 0, maximum: 1 },
+          estimatedWeightGrams: { type: "number" },
+          minimumWeightGrams: { type: "number" },
+          maximumWeightGrams: { type: "number" },
+          confidence: { type: "number" },
           visibleIngredients: { type: "array", items: { type: "string" } },
           uncertainIngredients: { type: "array", items: { type: "string" } },
           assumptions: { type: "array", items: { type: "string" } },
@@ -132,7 +130,6 @@ export const geminiResponseJsonSchema = {
     },
     followUpQuestions: {
       type: "array",
-      maxItems: 8,
       items: {
         type: "object",
         additionalProperties: false,
@@ -140,17 +137,12 @@ export const geminiResponseJsonSchema = {
         properties: {
           id: { type: "string" },
           question: { type: "string" },
-          options: { type: "array", minItems: 2, maxItems: 8, items: { type: "string" } },
-          relatedFoodTemporaryId: {
-            anyOf: [
-              { type: "string" },
-              { type: "null" },
-            ],
-          },
+          options: { type: "array", items: { type: "string" } },
+          relatedFoodTemporaryId: { type: "string" },
         },
       },
     },
-    overallConfidence: { type: "number", minimum: 0, maximum: 1 },
+    overallConfidence: { type: "number" },
     warnings: { type: "array", items: { type: "string" } },
   },
 } as const;
