@@ -1,6 +1,7 @@
 export type ServiceErrorCode =
   | "network"
   | "unauthorized"
+  | "auth-rate-limit"
   | "invalid-image"
   | "upload"
   | "vision-timeout"

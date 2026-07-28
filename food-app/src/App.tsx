@@ -10,6 +10,7 @@ import { createServices } from "@/services";
 import type { AuthUser } from "@/services/interfaces";
 import { Utensils } from "lucide-react";
 import { useHashPath } from "@/lib/router";
+import { clearOAuthRedirectError, getOAuthRedirectError } from "@/lib/auth";
 
 const serviceResult = createServices();
 const AddMealFlow = lazy(() =>
@@ -19,6 +20,7 @@ const AddMealFlow = lazy(() =>
 export function App() {
   const services = serviceResult.services;
   const [user, setUser] = useState<AuthUser | null | undefined>(undefined);
+  const [oauthRedirectError] = useState(() => getOAuthRedirectError(window.location.href));
   const path = useHashPath();
 
   useEffect(() => {
@@ -26,6 +28,10 @@ export function App() {
     void services.auth.getUser().then(setUser);
     return services.auth.onAuthStateChange(setUser);
   }, [services]);
+
+  useEffect(() => {
+    if (oauthRedirectError) clearOAuthRedirectError();
+  }, [oauthRedirectError]);
 
   const context = useMemo(() => (services && user ? { services, user } : null), [services, user]);
 
@@ -43,7 +49,7 @@ export function App() {
   }
 
   if (user === undefined) return <div className="boot-screen"><div className="brand-loader" /><span>Opening your meal journal...</span></div>;
-  if (!user) return <AuthScreen auth={services.auth} />;
+  if (!user) return <AuthScreen auth={services.auth} initialOAuthError={oauthRedirectError} />;
 
   let page;
   if (path === "/history") {

@@ -295,6 +295,7 @@ class MockAuthService implements AuthService {
   async getUser() {
     return { id: DEMO_USER_ID, email: "demo@plateful.local" };
   }
+  async signInWithGoogle() {}
   async sendMagicLink(email: string) { void email; }
   async signOut() {}
   onAuthStateChange(listener: Parameters<AuthService["onAuthStateChange"]>[0]) {

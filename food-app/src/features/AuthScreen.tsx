@@ -1,20 +1,36 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowRight, Camera, Check, ClipboardList, Pencil, Sparkles } from "lucide-react";
+import {
+  ArrowRight,
+  Camera,
+  Check,
+  ClipboardList,
+  LoaderCircle,
+  Pencil,
+  Sparkles,
+} from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { BrandMark } from "@/components/BrandMark";
 import { Disclaimer } from "@/components/Disclaimer";
 import { Button } from "@/components/ui/button";
+import { serviceErrorMessage } from "@/services/errors";
 import type { AuthService } from "@/services/interfaces";
 
 const emailSchema = z.object({
   email: z.string().trim().email("Enter a valid email address."),
 });
 
-export function AuthScreen({ auth }: { auth: AuthService }) {
+type AuthScreenProps = {
+  auth: AuthService;
+  initialOAuthError?: string | null;
+};
+
+export function AuthScreen({ auth, initialOAuthError = null }: AuthScreenProps) {
   const [sentEmail, setSentEmail] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState("");
+  const [oauthError, setOAuthError] = useState(initialOAuthError ?? "");
+  const [isOAuthPending, setIsOAuthPending] = useState(false);
   const {
     register,
     handleSubmit,
@@ -34,9 +50,21 @@ export function AuthScreen({ auth }: { auth: AuthService }) {
       setSentEmail(normalizedEmail);
     } catch (error) {
       console.error("Authentication failed", error);
-      setSubmitError("The sign-in email could not be sent. Check the address and try again.");
+      setSubmitError(serviceErrorMessage(error));
     }
   });
+
+  const signInWithGoogle = async () => {
+    setOAuthError("");
+    setIsOAuthPending(true);
+    try {
+      await auth.signInWithGoogle();
+    } catch (error) {
+      console.error("Google authentication failed", error);
+      setOAuthError(serviceErrorMessage(error));
+      setIsOAuthPending(false);
+    }
+  };
 
   return (
     <main className="auth-page">
@@ -55,42 +83,83 @@ export function AuthScreen({ auth }: { auth: AuthService }) {
           <div><Sparkles /><span><strong>Review</strong> the AI estimate</span></div>
           <div><ClipboardList /><span><strong>Correct and track</strong> what matters</span></div>
         </div>
-        {sentEmail ? (
-          <div className="auth-sent" role="status">
-            <Check aria-hidden="true" />
-            <div>
-              <strong>Check your inbox</strong>
-              <p>
-                We sent a secure sign-in link to <strong className="auth-sent-email">{sentEmail}</strong>.
-              </p>
-              <Button
-                variant="ghost"
-                size="small"
-                onClick={() => {
-                  setValue("email", sentEmail);
-                  setSentEmail(null);
-                  window.setTimeout(() => setFocus("email"), 0);
-                }}
-              >
-                <Pencil size={15} />
-                Change email
-              </Button>
-            </div>
+        <div className="auth-actions">
+          <Button
+            className="google-auth-button"
+            onClick={() => void signInWithGoogle()}
+            disabled={isOAuthPending || isSubmitting}
+            aria-describedby={oauthError ? "google-auth-error" : undefined}
+          >
+            {isOAuthPending ? (
+              <LoaderCircle className="button-spinner" size={19} aria-hidden="true" />
+            ) : (
+              <span className="google-mark" aria-hidden="true">G</span>
+            )}
+            {isOAuthPending ? "Connecting to Google..." : "Continue with Google"}
+          </Button>
+          {oauthError && (
+            <p id="google-auth-error" className="form-error" role="alert">
+              {oauthError}
+            </p>
+          )}
+
+          <div className="auth-divider" aria-hidden="true">
+            <span>or use email</span>
           </div>
-        ) : (
-          <form onSubmit={submit} noValidate>
-            <div className="field">
-              <label htmlFor="email">Email address</label>
-              <input id="email" type="email" autoComplete="email" placeholder="you@example.com" {...register("email")} />
-              {errors.email && <p className="field-error" role="alert">{errors.email.message}</p>}
+
+          {sentEmail ? (
+            <div className="auth-sent" role="status">
+              <Check aria-hidden="true" />
+              <div>
+                <strong>Check your inbox</strong>
+                <p>
+                  We sent a secure sign-in link to <strong className="auth-sent-email">{sentEmail}</strong>.
+                </p>
+                <Button
+                  variant="ghost"
+                  size="small"
+                  onClick={() => {
+                    setValue("email", sentEmail);
+                    setSentEmail(null);
+                    window.setTimeout(() => setFocus("email"), 0);
+                  }}
+                >
+                  <Pencil size={15} />
+                  Change email
+                </Button>
+              </div>
             </div>
-            {submitError && <p className="form-error" role="alert">{submitError}</p>}
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Sending link..." : "Continue with email"}
-              <ArrowRight size={18} />
-            </Button>
-          </form>
-        )}
+          ) : (
+            <form onSubmit={submit} noValidate aria-busy={isSubmitting}>
+              <div className="field">
+                <label htmlFor="email">Email address</label>
+                <input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  disabled={isOAuthPending}
+                  {...register("email")}
+                />
+                {errors.email && <p className="field-error" role="alert">{errors.email.message}</p>}
+              </div>
+              {submitError && <p className="form-error" role="alert">{submitError}</p>}
+              <Button type="submit" variant="secondary" disabled={isSubmitting || isOAuthPending}>
+                {isSubmitting ? (
+                  <>
+                    <LoaderCircle className="button-spinner" size={18} aria-hidden="true" />
+                    Sending link...
+                  </>
+                ) : (
+                  <>
+                    Continue with email
+                    <ArrowRight size={18} />
+                  </>
+                )}
+              </Button>
+            </form>
+          )}
+        </div>
         <p className="auth-privacy">No password required. Your meals remain private to your account.</p>
         <Disclaimer />
       </section>

@@ -14,10 +14,49 @@ import type {
   MealVisionProvider,
   NutritionProvider,
 } from "@/services/interfaces";
+import { getAuthRedirectUrl } from "@/lib/auth";
 import { ServiceError } from "@/services/errors";
 
-class SupabaseAuthService implements AuthService {
-  constructor(private readonly client: SupabaseClient) {}
+type AuthAction = "google" | "email";
+type AuthErrorDetails = {
+  code?: string;
+  status?: number;
+};
+
+function createAuthError(error: AuthErrorDetails, action: AuthAction) {
+  if (
+    error.code === "over_email_send_rate_limit"
+    || error.code === "over_request_rate_limit"
+    || error.status === 429
+  ) {
+    const message = action === "email"
+      ? "A sign-in email was requested recently. Wait a minute before trying again."
+      : "Too many sign-in attempts were made. Wait a few minutes, then try again.";
+    return new ServiceError("auth-rate-limit", message, error);
+  }
+
+  if (error.code === "provider_disabled" || error.code === "oauth_provider_not_supported") {
+    return new ServiceError(
+      "unauthorized",
+      "Google sign-in is not available right now. Use email instead.",
+      error,
+    );
+  }
+
+  return new ServiceError(
+    "unauthorized",
+    action === "email"
+      ? "The sign-in email could not be sent. Check the address and try again."
+      : "Google sign-in could not be started. Try again or use email instead.",
+    error,
+  );
+}
+
+export class SupabaseAuthService implements AuthService {
+  constructor(
+    private readonly client: SupabaseClient,
+    private readonly redirectUrl = getAuthRedirectUrl(),
+  ) {}
 
   async getUser() {
     const { data, error } = await this.client.auth.getUser();
@@ -25,12 +64,20 @@ class SupabaseAuthService implements AuthService {
     return { id: data.user.id, email: data.user.email };
   }
 
+  async signInWithGoogle() {
+    const { error } = await this.client.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: this.redirectUrl },
+    });
+    if (error) throw createAuthError(error, "google");
+  }
+
   async sendMagicLink(email: string) {
     const { error } = await this.client.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/food/` },
+      options: { emailRedirectTo: this.redirectUrl },
     });
-    if (error) throw new ServiceError("unauthorized", error.message, error);
+    if (error) throw createAuthError(error, "email");
   }
 
   async signOut() {
@@ -45,6 +92,12 @@ class SupabaseAuthService implements AuthService {
     return () => data.subscription.unsubscribe();
   }
 }
+
+export const SUPABASE_AUTH_OPTIONS = {
+  autoRefreshToken: true,
+  persistSession: true,
+  detectSessionInUrl: true,
+} as const;
 
 class SupabaseVisionProvider implements MealVisionProvider {
   constructor(private readonly client: SupabaseClient) {}
@@ -344,7 +397,7 @@ class SupabaseMealRepository implements MealRepository {
 
 export function createSupabaseServices(url: string, anonKey: string): AppServices {
   const client = createClient(url, anonKey, {
-    auth: { persistSession: true, detectSessionInUrl: true },
+    auth: SUPABASE_AUTH_OPTIONS,
   });
   return {
     mode: "production",

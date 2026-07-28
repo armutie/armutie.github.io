@@ -99,14 +99,39 @@ The migration creates normalized profiles, meals, and meal items; original and c
 
 ## 7. Authentication configuration
 
-In Supabase Authentication:
+Google OAuth is the primary sign-in method. Magic-link email remains available as a fallback. Both methods return to the same `/food/` frontend and use the same Supabase user/session, so the existing `auth.users.id`, profile, meals, RLS ownership, and storage paths are unchanged.
 
-1. Enable email OTP or magic-link sign-in.
-2. Set Site URL to `https://armutie.github.io/food/`.
-3. Add redirect URLs:
+### Supabase URL configuration
+
+In **Authentication > URL Configuration**:
+
+1. Set Site URL to `https://armutie.github.io/food/`.
+2. Add these redirect URLs:
    - `https://armutie.github.io/food/`
    - `http://127.0.0.1:4173/food/`
-4. Customize the email template if desired.
+
+The frontend passes the exact production URL through `redirectTo`. The Supabase client persists the session in browser storage, refreshes tokens, and detects the completed OAuth session in the redirect URL.
+
+### Google provider
+
+1. In Google Auth Platform, create an OAuth 2.0 Client ID with application type **Web application**.
+2. Add `https://armutie.github.io` under **Authorized JavaScript origins**. Add `http://127.0.0.1:4173` for local OAuth testing.
+3. Under **Authorized redirect URIs**, add the Supabase callback shown on the Google provider page:
+
+   ```text
+   https://YOUR_PROJECT_REF.supabase.co/auth/v1/callback
+   ```
+
+4. In **Supabase > Authentication > Sign In / Providers > Google**, enable Google and enter the Client ID and Client Secret. The Google client secret stays in Supabase and is never a Vite variable.
+5. Configure the Google consent screen with the `openid`, email, and profile scopes. Publish it or add test users as appropriate for the consent-screen status.
+
+Supabase automatically links a verified Google identity to an existing Supabase user with the same email address. Confirm this behavior with a non-production test account before inviting existing users; this application does not create, replace, or migrate user IDs.
+
+### Email fallback
+
+1. Keep email OTP or magic-link sign-in enabled.
+2. Customize the email template if desired. If the template builds its own link, use the Supabase `RedirectTo` value so it returns to `/food/`.
+3. Supabase normally limits repeat magic-link requests for the same user. The app displays a specific wait-and-retry message for rate-limit responses.
 
 Unauthenticated users only see sign-in. RLS filters profiles, meals, meal items, and storage objects by `auth.uid()`.
 

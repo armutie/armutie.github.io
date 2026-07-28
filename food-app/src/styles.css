@@ -852,6 +852,63 @@ p {
   color: hsl(var(--ink));
 }
 
+.auth-actions {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.google-auth-button {
+  width: 100%;
+  min-height: 54px;
+  color: hsl(var(--ink));
+  background: white;
+  border-color: hsl(var(--herb));
+  box-shadow: 0 5px 16px rgba(40, 55, 42, 0.08);
+  font-size: 0.96rem;
+}
+
+.google-auth-button:hover:not(:disabled) {
+  color: white;
+  background: hsl(var(--herb));
+}
+
+.google-mark {
+  width: 23px;
+  height: 23px;
+  display: grid;
+  place-items: center;
+  color: #1a73e8;
+  background: white;
+  border: 1px solid hsl(var(--line));
+  border-radius: 50%;
+  font-family: Arial, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.button-spinner {
+  flex: 0 0 auto;
+  animation: spin 800ms linear infinite;
+}
+
+.auth-divider {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.7rem;
+  color: hsl(var(--muted));
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  height: 1px;
+  content: "";
+  background: hsl(var(--line));
+}
+
 .auth-copy form {
   display: grid;
   gap: 0.7rem;

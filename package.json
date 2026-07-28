@@ -10,7 +10,7 @@
     "lint:food": "eslint food-app/src --max-warnings=0",
     "test:food": "vitest run --config food-app/vite.config.ts",
     "test:food:watch": "vitest --config food-app/vite.config.ts",
-    "test:e2e:food": "node food-app/e2e/meal-flow.mjs",
+    "test:e2e:food": "node food-app/e2e/auth-screen.mjs && node food-app/e2e/meal-flow.mjs",
     "verify:food": "npm run typecheck:food && npm run lint:food && npm run test:food && npm run build:food"
   },
   "dependencies": {

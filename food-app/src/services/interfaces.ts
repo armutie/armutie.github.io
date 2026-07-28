@@ -32,6 +32,7 @@ export type AuthUser = {
 
 export interface AuthService {
   getUser(): Promise<AuthUser | null>;
+  signInWithGoogle(): Promise<void>;
   sendMagicLink(email: string): Promise<void>;
   signOut(): Promise<void>;
   onAuthStateChange(listener: (user: AuthUser | null) => void): () => void;
