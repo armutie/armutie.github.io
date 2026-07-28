@@ -56,6 +56,7 @@ export const analyzeRequestSchema = z.object({
       "none",
       "canadian_loonie",
       "canadian_toonie",
+      "phone",
       "iphone_15",
       "iphone_15_pro",
       "iphone_15_pro_max",

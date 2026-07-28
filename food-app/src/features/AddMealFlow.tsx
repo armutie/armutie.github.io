@@ -13,6 +13,7 @@ import {
   Info,
   LoaderCircle,
   Plus,
+  Ruler,
   Search,
   Sparkles,
   Trash2,
@@ -334,18 +335,30 @@ export function AddMealFlow() {
             <div className="field"><label htmlFor="knownIngredients">Known ingredients <span>(optional)</span></label><textarea id="knownIngredients" rows={2} placeholder="e.g. chicken thigh, olive oil, Greek yogurt" {...form.register("knownIngredients")} /><small>Add details the camera cannot see, such as oil or sauce ingredients.</small></div>
           </div>
 
-          <fieldset className="setup-section reference-fieldset">
-            <legend>Size reference</legend>
-            <p>A familiar object can improve approximate scale. Keep it beside the food on the same plane.</p>
-            <ReferencePicker value={form.watch("referenceType")} onChange={(value) => form.setValue("referenceType", value)} />
-            {form.watch("referenceType") === "custom" && (
-              <div className="custom-reference">
-                <div className="field"><label htmlFor="customLabel">Object name</label><input id="customLabel" placeholder="e.g. coaster" {...form.register("customLabel")} /></div>
-                <div className="field"><label htmlFor="customWidth">Known width or diameter (mm)</label><input id="customWidth" type="number" min="1" step="0.1" {...form.register("customWidthMm", { setValueAs: (value) => value === "" ? undefined : Number(value) })} />{form.formState.errors.customWidthMm && <p className="field-error">{form.formState.errors.customWidthMm.message}</p>}</div>
-              </div>
-            )}
-            <div className="reference-limit"><Info size={16} /><span>A reference cannot reveal hidden depth, ingredients, internal density, exact oil or sauce, or food beneath other food.</span></div>
-          </fieldset>
+          <details className="setup-section reference-disclosure">
+            <summary>
+              <span className="reference-summary-icon"><Ruler size={18} /></span>
+              <span className="reference-summary-copy">
+                <strong>Improve portion estimate <span>(optional)</span></strong>
+                <small>{referenceSummary(form.watch("referenceType"), form.watch("customLabel"))}</small>
+              </span>
+              <ChevronDown className="reference-summary-chevron" size={18} />
+            </summary>
+            <div className="reference-content">
+              <p>A familiar object beside the food can provide an approximate scale cue.</p>
+              <fieldset className="reference-fieldset">
+                <legend className="visually-hidden">Reference object</legend>
+                <ReferencePicker value={form.watch("referenceType")} onChange={(value) => form.setValue("referenceType", value)} />
+                {form.watch("referenceType") === "custom" && (
+                  <div className="custom-reference">
+                    <div className="field"><label htmlFor="customLabel">Object name</label><input id="customLabel" placeholder="e.g. coaster" {...form.register("customLabel")} /></div>
+                    <div className="field"><label htmlFor="customWidth">Known width or diameter (mm)</label><input id="customWidth" type="number" min="1" step="0.1" {...form.register("customWidthMm", { setValueAs: (value) => value === "" ? undefined : Number(value) })} />{form.formState.errors.customWidthMm && <p className="field-error">{form.formState.errors.customWidthMm.message}</p>}</div>
+                  </div>
+                )}
+                <div className="reference-limit"><Info size={16} /><span>A reference cannot reveal hidden depth, ingredients, density, exact oil or sauce, or food beneath other food.</span></div>
+              </fieldset>
+            </div>
+          </details>
 
           <fieldset className="setup-section privacy-fieldset">
             <legend>Photo privacy</legend>
@@ -362,19 +375,24 @@ export function AddMealFlow() {
   );
 }
 
+const referenceOptions: Array<{ type: ReferenceObjectType; label: string; detail: string }> = [
+  { type: "none", label: "None", detail: "No scale cue" },
+  { type: "canadian_loonie", label: "Loonie", detail: "26.5 mm" },
+  { type: "canadian_toonie", label: "Toonie", detail: "28.0 mm" },
+  { type: "phone", label: "Phone", detail: "Approximate size" },
+  { type: "custom", label: "Custom", detail: "Known size" },
+];
+
+function referenceSummary(type: ReferenceObjectType, customLabel: string) {
+  if (type === "none") return "No reference object selected";
+  if (type === "custom" && customLabel.trim()) return `Reference: ${customLabel.trim()}`;
+  return `Reference: ${referenceOptions.find((option) => option.type === type)?.label ?? "Selected"}`;
+}
+
 function ReferencePicker({ value, onChange }: { value: ReferenceObjectType; onChange: (value: ReferenceObjectType) => void }) {
-  const compactOptions: Array<{ type: ReferenceObjectType; label: string; detail: string }> = [
-    { type: "none", label: "None", detail: "No scale cue" },
-    { type: "canadian_loonie", label: "Loonie", detail: "26.5 mm" },
-    { type: "canadian_toonie", label: "Toonie", detail: "28.0 mm" },
-    { type: "iphone_15", label: "iPhone 15", detail: "71.6 mm wide" },
-    { type: "iphone_15_pro", label: "15 Pro", detail: "70.6 mm wide" },
-    { type: "iphone_15_pro_max", label: "15 Pro Max", detail: "76.7 mm wide" },
-    { type: "custom", label: "Custom", detail: "Known size" },
-  ];
   return (
     <div className="reference-options" role="radiogroup" aria-label="Reference object">
-      {compactOptions.map((option) => (
+      {referenceOptions.map((option) => (
         <button
           type="button"
           key={option.type}

@@ -4,6 +4,7 @@ export const referenceObjectTypes = [
   "none",
   "canadian_loonie",
   "canadian_toonie",
+  "phone",
   "iphone_15",
   "iphone_15_pro",
   "iphone_15_pro_max",
@@ -19,6 +20,8 @@ export type ReferenceObjectDefinition = {
   widthMm: number | null;
   heightMm: number | null;
   shape: "none" | "circle" | "rectangle";
+  approximateWidthRangeMm?: readonly [number, number];
+  approximateHeightRangeMm?: readonly [number, number];
 };
 
 export const REFERENCE_OBJECTS: Record<Exclude<ReferenceObjectType, "custom">, ReferenceObjectDefinition> = {
@@ -42,6 +45,15 @@ export const REFERENCE_OBJECTS: Record<Exclude<ReferenceObjectType, "custom">, R
     widthMm: 28,
     heightMm: 28,
     shape: "circle",
+  },
+  phone: {
+    type: "phone",
+    label: "Phone (approximate)",
+    widthMm: null,
+    heightMm: null,
+    shape: "rectangle",
+    approximateWidthRangeMm: [68, 80],
+    approximateHeightRangeMm: [140, 165],
   },
   iphone_15: {
     type: "iphone_15",

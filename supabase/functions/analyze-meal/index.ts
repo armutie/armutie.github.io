@@ -137,6 +137,8 @@ Deno.serve(async (request) => {
       : REFERENCE_OBJECTS[input.reference.type];
     const referenceDescription = selectedReference.widthMm
       ? `${selectedReference.label}, known width or diameter ${selectedReference.widthMm} mm${selectedReference.heightMm ? ` and height ${selectedReference.heightMm} mm` : ""}`
+      : selectedReference.approximateWidthRangeMm
+      ? `${selectedReference.label}, approximate width ${selectedReference.approximateWidthRangeMm[0]} to ${selectedReference.approximateWidthRangeMm[1]} mm and height ${selectedReference.approximateHeightRangeMm?.[0]} to ${selectedReference.approximateHeightRangeMm?.[1]} mm; exact model and dimensions are unknown`
       : "No reference object was selected.";
 
     const vision = await createVisionProvider().analyzeMeal({
