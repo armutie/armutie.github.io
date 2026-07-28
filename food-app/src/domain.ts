@@ -90,7 +90,7 @@ export const mealDraftSchema = z.object({
   clientRequestId: z.string().uuid(),
   name: z.string().trim().min(1).max(100),
   mealType: z.enum(["breakfast", "lunch", "dinner", "snack"]),
-  consumedAt: z.string().datetime(),
+  consumedAt: z.string().datetime({ offset: true }),
   notes: z.string().max(1000),
   knownIngredients: z.string().max(1000),
   reference: selectedReferenceSchema,
@@ -105,8 +105,8 @@ export type MealDraft = z.infer<typeof mealDraftSchema>;
 
 export const savedMealSchema = mealDraftSchema.extend({
   id: z.string().uuid(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.string().datetime({ offset: true }),
+  updatedAt: z.string().datetime({ offset: true }),
   aiProvider: z.string(),
   aiModel: z.string(),
 });
