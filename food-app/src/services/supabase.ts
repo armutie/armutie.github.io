@@ -15,7 +15,7 @@ import type {
   NutritionProvider,
 } from "@/services/interfaces";
 import { getAuthRedirectUrl } from "@/lib/auth";
-import { ServiceError } from "@/services/errors";
+import { ServiceError, type ServiceErrorCode } from "@/services/errors";
 
 type AuthAction = "google" | "email";
 type AuthErrorDetails = {
@@ -99,6 +99,45 @@ export const SUPABASE_AUTH_OPTIONS = {
   detectSessionInUrl: true,
 } as const;
 
+const VISION_ERROR_DETAILS: Record<string, { code: ServiceErrorCode; message: string }> = {
+  timeout: {
+    code: "vision-timeout",
+    message: "The vision provider took too long. Try again with the same photo.",
+  },
+  malformed: {
+    code: "vision-malformed",
+    message: "The provider returned an incomplete result. Run the analysis again.",
+  },
+  refusal: {
+    code: "vision-no-food",
+    message: "No meal could be identified in this photo. Try a clearer, well-lit image.",
+  },
+  unavailable: {
+    code: "vision-unavailable",
+    message: "The AI service is temporarily unavailable. Try again shortly.",
+  },
+  "provider-quota": {
+    code: "vision-quota",
+    message: "The AI service has reached its current quota. Try again later.",
+  },
+  "provider-configuration": {
+    code: "vision-configuration",
+    message: "Meal analysis needs a server configuration fix. Try again later.",
+  },
+  upload: {
+    code: "upload",
+    message: "The meal photo could not be prepared on the server. Try uploading it again.",
+  },
+};
+
+export function createVisionServiceError(providerCode: string, cause: unknown) {
+  const detail = VISION_ERROR_DETAILS[providerCode] ?? {
+    code: "unknown" as const,
+    message: "The meal could not be analyzed. Check your connection and try again.",
+  };
+  return new ServiceError(detail.code, detail.message, cause);
+}
+
 class SupabaseVisionProvider implements MealVisionProvider {
   constructor(private readonly client: SupabaseClient) {}
 
@@ -125,22 +164,7 @@ class SupabaseVisionProvider implements MealVisionProvider {
           // Some network and gateway errors do not include a JSON body.
         }
       }
-      const messages: Record<string, string> = {
-        timeout: "The vision provider took too long. Try again with the same photo.",
-        malformed: "The provider returned an incomplete result. Run the analysis again.",
-        refusal: "No meal could be identified in this photo. Try a clearer, well-lit image.",
-      };
-      throw new ServiceError(
-        providerCode === "timeout"
-          ? "vision-timeout"
-          : providerCode === "malformed"
-            ? "vision-malformed"
-            : providerCode === "refusal"
-              ? "vision-no-food"
-              : "unknown",
-        messages[providerCode] ?? "The meal could not be analyzed. Check your connection and try again.",
-        error,
-      );
+      throw createVisionServiceError(providerCode, error);
     }
     const parsed = mealAnalysisResultSchema.safeParse(data);
     if (!parsed.success) {

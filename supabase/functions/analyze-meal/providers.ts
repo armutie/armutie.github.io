@@ -33,7 +33,14 @@ export interface NutritionProvider {
 
 export class ProviderError extends Error {
   constructor(
-    public readonly code: "timeout" | "malformed" | "refusal" | "unavailable" | "no-match",
+    public readonly code:
+      | "timeout"
+      | "malformed"
+      | "refusal"
+      | "unavailable"
+      | "provider-configuration"
+      | "provider-quota"
+      | "no-match",
     message: string,
     public readonly status = 502,
   ) {
@@ -87,6 +94,19 @@ export class GeminiMealVisionProvider implements MealVisionProvider {
       if (!response.ok) {
         const detail = await response.text();
         console.error("Gemini request failed", response.status, detail.slice(0, 500));
+        if ([400, 401, 403, 404].includes(response.status)) {
+          throw new ProviderError(
+            "provider-configuration",
+            "The vision provider rejected its server configuration.",
+          );
+        }
+        if (response.status === 429) {
+          throw new ProviderError(
+            "provider-quota",
+            "The vision provider quota is temporarily exhausted.",
+            429,
+          );
+        }
         throw new ProviderError("unavailable", "The vision provider is temporarily unavailable.");
       }
       const payload = await response.json();

@@ -56,7 +56,10 @@ Deno.serve(async (request) => {
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!supabaseUrl || !anonKey || !serviceRoleKey) {
     console.error("Supabase function secrets are incomplete.");
-    return json({ error: "Server configuration is incomplete." }, 500, origin);
+    return json({
+      error: "Server configuration is incomplete.",
+      code: "provider-configuration",
+    }, 500, origin);
   }
 
   const userClient = createClient(supabaseUrl, anonKey, {
@@ -103,7 +106,10 @@ Deno.serve(async (request) => {
     .upload(imagePath, bytes, { contentType: image.mimeType, upsert: false });
   if (uploadError) {
     console.error("Image upload failed", uploadError.message);
-    return json({ error: "The photo could not be uploaded. Try again." }, 502, origin);
+    return json({
+      error: "The photo could not be uploaded. Try again.",
+      code: "upload",
+    }, 502, origin);
   }
 
   try {
@@ -143,7 +149,10 @@ Deno.serve(async (request) => {
       const { error: deleteError } = await admin.storage.from("meal-images").remove([imagePath]);
       if (deleteError) {
         console.error("Temporary image deletion failed", deleteError.message);
-        return json({ error: "Analysis completed, but the temporary photo could not be deleted. Please retry." }, 502, origin);
+        return json({
+          error: "Analysis completed, but the temporary photo could not be deleted. Please retry.",
+          code: "upload",
+        }, 502, origin);
       }
     }
 
