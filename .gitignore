@@ -1,0 +1,13 @@
+node_modules/
+.env
+.env.*
+!.env.example
+food-app/.env
+food-app/.env.*
+coverage/
+playwright-report/
+test-results/
+output/playwright/
+.DS_Store
+supabase/.branches/
+supabase/.temp/
