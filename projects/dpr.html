@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Drowning Prevention Robot: field-tested autonomy, embedded integration, radar perception, and ROS 2 architecture by Abdur Rahman Mutie.">
+    <title>Drowning Prevention Robot | Abdur Rahman Mutie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <script src="../script.js" defer></script>
+</head>
+
+<body>
+    <nav class="nav" aria-label="Primary navigation">
+        <a href="../index.html" class="nav-name">armutie</a>
+        <div class="nav-links">
+            <a href="./" class="nav-link">projects</a>
+            <a href="../experience/" class="nav-link">experience</a>
+            <a href="../writing/" class="nav-link">writing</a>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light mode">
+                <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5A8.5 8.5 0 1 0 20.5 14.5Z" />
+                </svg>
+                <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4" />
+                    <path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93" />
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <main class="project-page compact dpr-page">
+        <header class="project-header-inline dpr-project-header fade-in">
+            <div class="header-text">
+                <span class="project-tag">Robotics &middot; Software Team Lead</span>
+                <h1>Drowning Prevention Robot</h1>
+                <p class="project-subtitle">Field-tested autonomy and perception for UW MedTech Robotics.</p>
+                <div class="team-lockup">
+                    <img src="../src/dpr/uwmtr-logo.jpg" alt="UW MedTech Robotics">
+                    <span><strong>UW MedTech Robotics</strong><small>2026 MassRobotics Form &amp; Function finalist</small></span>
+                </div>
+            </div>
+            <div class="header-hero">
+                <img src="../src/dpr/robot-bench.jpg"
+                    alt="Drowning prevention robot during bench integration testing">
+            </div>
+        </header>
+
+        <section class="project-facts fade-in" aria-label="Project facts">
+            <div><span>Role</span><strong>Software Team Lead</strong></div>
+            <div><span>Compute</span><strong>Orange Pi 5 Plus</strong></div>
+            <div><span>Architecture</span><strong>ROS 2</strong></div>
+            <div><span>Interfaces</span><strong>UART / I2C / Ethernet / USB</strong></div>
+        </section>
+
+        <article class="project-content">
+            <section class="split-section fade-in">
+                <div class="split-text">
+                    <span class="case-index">01 / FIELD TESTING</span>
+                    <h2>From browser control to waypoint autonomy</h2>
+                    <p>I built a browser-based control interface for manual operation, then added a map workflow where
+                        an operator could select a waypoint and send the robot there autonomously.</p>
+                    <p>GNSS position and a 9-axis BNO055 absolute heading estimate drove differential thrust through an
+                        ESP32. The system was tested on the water in both manual and autonomous modes.</p>
+                </div>
+                <figure class="split-image case-figure">
+                    <img src="../src/dpr/water-test.png" alt="Robot performing an autonomous water test">
+                    <figcaption>Autonomous water test using GNSS, absolute heading, and differential thrust.</figcaption>
+                </figure>
+            </section>
+
+            <section class="fade-in">
+                <span class="case-index">02 / SYSTEM OWNERSHIP</span>
+                <h2>The software and embedded stack I owned</h2>
+                <div class="engineering-grid">
+                    <article>
+                        <span>Navigation</span>
+                        <h3>GNSS + BNO055</h3>
+                        <p>Parsed position, heading, and speed data; replaced the 6-axis MPU6050 with a calibrated
+                            9-axis BNO055 for absolute direction.</p>
+                    </article>
+                    <article>
+                        <span>Simulation</span>
+                        <h3>1M+ training steps</h3>
+                        <p>Trained a reinforcement-learning waypoint policy using synthetic range observations, with
+                            reward shaping for obstacle avoidance and target approach.</p>
+                    </article>
+                    <article>
+                        <span>Integration</span>
+                        <h3>Four hardware interfaces</h3>
+                        <p>Connected GNSS over UART, the IMU over I2C, a USB camera, Ethernet LiDAR, and an ESP32
+                            responsible for dual-thruster output.</p>
+                    </article>
+                    <article>
+                        <span>Reliability</span>
+                        <h3>Fail-safe control</h3>
+                        <p>Added stale-data and serial-timeout handling that returns thrust commands to neutral rather
+                            than allowing the previous command to persist.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="fade-in radar-case">
+                <span class="case-index">03 / RADAR DEVELOPMENT</span>
+                <h2>Turning noisy mmWave detections into steering decisions</h2>
+                <p class="case-lede">The TI mmWave radar produced raw point clouds with reflections and inconsistent
+                    detections. I decoded the binary UART frames, evaluated SNR and spatial filters, then grouped
+                    detections using density-based clustering and temporal hysteresis.</p>
+
+                <div class="case-gallery case-gallery-three">
+                    <figure>
+                        <img src="../src/dpr/radar-sketch.jpg" alt="Sketch of the waterproof radar mounting concept">
+                        <figcaption>Mount concept and window-clearance constraints</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../src/dpr/radar-mount.jpg" alt="Printed radar mount installed in its enclosure">
+                        <figcaption>Printed mount inside the waterproof enclosure</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../src/dpr/radar-clusters.jpg" alt="Radar obstacle clusters in the navigation program">
+                        <figcaption>Clustered left, front, and right obstacle evidence</figcaption>
+                    </figure>
+                </div>
+
+                <div class="measurement-strip" aria-label="Radar spacing test result">
+                    <div><span>3.5 cm from window</span><strong>34%</strong><small>point retention</small></div>
+                    <span class="measurement-arrow" aria-hidden="true">&rarr;</span>
+                    <div><span>0.2 cm from window</span><strong>81%</strong><small>point retention</small></div>
+                    <p>The custom mount fixed the sensor against the clear face and recovered most of the lost
+                        detections. Cluster scores were then converted into steering, throttle, and stop commands in
+                        small-scale navigation tests.</p>
+                </div>
+            </section>
+
+            <section class="split-section reverse fade-in">
+                <div class="split-text">
+                    <span class="case-index">04 / ARCHITECTURE</span>
+                    <h2>Rewriting the controller as ROS 2 nodes</h2>
+                    <p>The early prototype was a monolithic program: practical for moving quickly, but one sensor or
+                        serial failure could affect the whole controller. As software lead, I rewrote the stack around
+                        isolated ROS 2 nodes and explicit message boundaries.</p>
+                    <p>This made navigation, sensors, perception, and thruster control independently testable. It also
+                        gave the team a cleaner path for current camera, stereo-vision, and LiDAR experiments.</p>
+                </div>
+                <div class="architecture-panel" aria-label="ROS 2 architecture summary">
+                    <div><span>INPUT</span><strong>GNSS / IMU / Camera / LiDAR</strong></div>
+                    <div><span>DECISION</span><strong>Navigation + Perception Nodes</strong></div>
+                    <div><span>OUTPUT</span><strong>ESP32 / Dual Thrusters</strong></div>
+                    <div><span>SAFETY</span><strong>Timeout + Neutral Command</strong></div>
+                </div>
+            </section>
+
+            <section class="outcome-section fade-in">
+                <span class="case-index">05 / OUTCOME</span>
+                <h2>A working platform, with the hardest perception problem still open</h2>
+                <p>The robot is sealed, controllable, and capable of autonomous waypoint navigation. The remaining
+                    challenge is not simply detecting a person; it is distinguishing normal swimming from distress over
+                    time. Current work evaluates live camera perception, tracking, stereo depth, and LiDAR as a testing
+                    reference without assuming that every sensor belongs on the final robot.</p>
+                <div class="project-links-inline">
+                    <a href="https://github.com/armutie/mtr-boat-core" target="_blank" rel="noopener noreferrer">View code on GitHub &rarr;</a>
+                    <a href="../engineering-portfolio.pdf" target="_blank" rel="noopener noreferrer">Open portfolio PDF &rarr;</a>
+                </div>
+            </section>
+        </article>
+
+        <footer class="project-footer fade-in">
+            <a href="./" class="back-link">&larr; Back to projects</a>
+        </footer>
+    </main>
+</body>
+
+</html>

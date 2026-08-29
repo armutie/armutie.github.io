@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An experimental first-person table-tennis simulation with custom spin physics, AI, practice modes, and authoritative LAN multiplayer.">
+    <title>Table Tennis Simulation | Abdur Rahman Mutie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <script src="../script.js" defer></script>
+</head>
+<body>
+    <nav class="nav" aria-label="Primary navigation">
+        <a href="../index.html" class="nav-name">armutie</a>
+        <div class="nav-links">
+            <a href="./" class="nav-link">projects</a>
+            <a href="../experience/" class="nav-link">experience</a>
+            <a href="../writing/" class="nav-link">writing</a>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light mode">
+                <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5A8.5 8.5 0 1 0 20.5 14.5Z" /></svg>
+                <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93" /></svg>
+            </button>
+        </div>
+    </nav>
+    <main class="project-page compact software-case-page table-tennis-page">
+        <header class="software-case-header fade-in">
+            <div class="software-case-copy">
+                <span class="project-tag">Physics &middot; Python / Pygame</span>
+                <h1>Table Tennis</h1>
+                <p class="project-subtitle">An experimental first-person game built around the physics that make spin matter.</p>
+                <div class="project-links-inline"><a href="https://github.com/armutie/table-tennis" target="_blank" rel="noopener noreferrer">View GitHub &rarr;</a></div>
+            </div>
+            <div class="table-tennis-hero" role="img" aria-label="Diagram showing a spinning ball crossing a table-tennis net">
+                <span class="hero-table"></span><span class="hero-net"></span><span class="hero-trajectory"></span><span class="hero-ball"></span>
+                <span class="hero-vector vector-drag">DRAG</span><span class="hero-vector vector-magnus">MAGNUS</span><span class="hero-vector vector-spin">&omega;</span>
+                <span class="hero-readout">2.7 g BALL &nbsp;/&nbsp; 3D SPIN &nbsp;/&nbsp; SI UNITS</span>
+            </div>
+        </header>
+        <section class="project-facts fade-in" aria-label="Project facts">
+            <div><span>Core</span><strong>Python / NumPy</strong></div>
+            <div><span>Rendering</span><strong>Pygame</strong></div>
+            <div><span>Physics</span><strong>Drag / Magnus / friction</strong></div>
+            <div><span>Network</span><strong>Authoritative UDP</strong></div>
+        </section>
+        <article class="project-content software-case-content">
+            <section class="software-story fade-in">
+                <div><span class="case-index">01 / PHYSICS CORE</span><h2>Spin is part of the state—not a visual effect</h2></div>
+                <p>The ball carries position, velocity, and a full 3D angular-velocity vector. Quadratic aerodynamic drag slows a 2.7 g ball realistically, while the Magnus term uses <em>spin × velocity</em> to produce topspin dip, backspin float, and sidespin curve without shot-specific special cases.</p>
+            </section>
+            <section class="engineering-grid fade-in">
+                <article><span>Flight</span><h3>Drag + Magnus force</h3><p>Flight is advanced at a high fixed rate using regulation dimensions and SI units.</p></article>
+                <article><span>Contact</span><h3>Spin-coupled bounce</h3><p>Coulomb-limited friction transfers energy between ball speed and angular velocity on table contact.</p></article>
+                <article><span>Gameplay</span><h3>AI + practice modes</h3><p>A single-player match and focused serve and feel tests support rapid tuning of control and physics.</p></article>
+                <article><span>Performance</span><h3>Prediction without stalls</h3><p>The hottest integration path uses scalar in-place updates to avoid allocation spikes during AI trajectory prediction.</p></article>
+            </section>
+            <section class="software-story reverse fade-in">
+                <div><span class="case-index">02 / MULTIPLAYER</span><h2>One authoritative court, two mirrored viewpoints</h2></div>
+                <p>LAN clients send paddle input over UDP; the server owns the match, advances the simulation, and broadcasts snapshots at roughly 60 Hz. Both players use the same near-side camera and the far client transforms positions, velocity, spin, and paddle normals through a 180° court rotation.</p>
+            </section>
+            <section class="outcome-section fade-in">
+                <span class="case-index">03 / STATUS</span>
+                <h2>A technical experiment, intentionally presented as one</h2>
+                <p>The project already supports first-person control, an AI opponent, practice modes, scoring, sound, and LAN play. Its value here is the simulation and networking work—not a claim that it is a finished commercial game.</p>
+                <div class="project-links-inline"><a href="https://github.com/armutie/table-tennis" target="_blank" rel="noopener noreferrer">Inspect the code &rarr;</a></div>
+            </section>
+        </article>
+        <footer class="project-footer fade-in"><a href="./" class="back-link">&larr; Back to projects</a></footer>
+    </main>
+</body>
+</html>

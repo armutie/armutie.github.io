@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Bite Point: a browser racing simulation with custom vehicle dynamics, ghost laps, sector timing, and replay-verified leaderboards.">
+    <title>Bite Point | Abdur Rahman Mutie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <script src="../script.js" defer></script>
+</head>
+<body>
+    <nav class="nav" aria-label="Primary navigation">
+        <a href="../index.html" class="nav-name">armutie</a>
+        <div class="nav-links">
+            <a href="./" class="nav-link">projects</a>
+            <a href="../experience/" class="nav-link">experience</a>
+            <a href="../writing/" class="nav-link">writing</a>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light mode">
+                <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5A8.5 8.5 0 1 0 20.5 14.5Z" /></svg>
+                <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93" /></svg>
+            </button>
+        </div>
+    </nav>
+    <main class="project-page compact software-case-page bitepoint-page">
+        <header class="software-case-header fade-in">
+            <div class="software-case-copy">
+                <span class="project-tag">Simulation &middot; Full-stack TypeScript</span>
+                <h1>Bite Point</h1>
+                <p class="project-subtitle">A focused browser racing simulation built to feel good on keyboard and mouse.</p>
+                <div class="project-links-inline">
+                    <a href="https://armutie.github.io/bitepoint/" target="_blank" rel="noopener noreferrer">Play in browser &rarr;</a>
+                    <a href="https://github.com/armutie/bitepoint" target="_blank" rel="noopener noreferrer">View GitHub &rarr;</a>
+                </div>
+            </div>
+            <figure class="software-case-hero">
+                <img src="../src/software/bitepoint-social.webp" alt="Bite Point racing simulation artwork">
+            </figure>
+        </header>
+        <section class="project-facts fade-in" aria-label="Project facts">
+            <div><span>Client</span><strong>TypeScript / Three.js</strong></div>
+            <div><span>API</span><strong>Fastify / PostgreSQL</strong></div>
+            <div><span>Content</span><strong>4 circuits / 2 setups</strong></div>
+            <div><span>Validation</span><strong>Server replay</strong></div>
+        </section>
+        <article class="project-content software-case-content">
+            <section class="software-story fade-in">
+                <div><span class="case-index">01 / THE FEEL</span><h2>Vehicle dynamics that stay independent of rendering</h2></div>
+                <p>The simulation owns the car state and lap rules; Three.js only renders them. A fixed-step vehicle model drives steering, load transfer, grip, collisions, and timing consistently across hardware, while scalable graphics preserve the same underlying race.</p>
+            </section>
+            <section class="engineering-grid fade-in">
+                <article><span>Driving</span><h3>Keyboard + mouse</h3><p>Mouse steering, throttle, and braking were tuned around clean, repeatable control rather than controller emulation.</p></article>
+                <article><span>Feedback</span><h3>Ghosts + sectors</h3><p>Personal bests, delta timing, sector splits, and saved ghost paths make improvement visible lap by lap.</p></article>
+                <article><span>Rendering</span><h3>Scalable Three.js</h3><p>Multiple cameras, terrain, scenery, shadows, post-processing, and quality settings share one simulation state.</p></article>
+                <article><span>Content</span><h3>Data-driven tracks</h3><p>Circuits and barriers are loaded from track data, with four routes and two distinct handling setups available.</p></article>
+            </section>
+            <section class="software-story reverse fade-in">
+                <div><span class="case-index">02 / TRUSTED RESULTS</span><h2>The leaderboard does not trust the browser</h2></div>
+                <p>Each submitted lap includes an input recording. The server reconstructs the circuit and physics ruleset, re-simulates the lap, and accepts the result only when the replay agrees. Supabase handles identity and PostgreSQL persistence; a local Fastify implementation keeps development portable.</p>
+            </section>
+            <section class="outcome-section fade-in">
+                <span class="case-index">03 / RESULT</span>
+                <h2>Playable, deployed, and designed as a complete product</h2>
+                <p>Bite Point runs directly in the browser and includes onboarding, settings, timing, records, ghosts, multiple circuits, two car behaviours, and a production deployment pipeline—not just a driving demo.</p>
+                <div class="project-links-inline">
+                    <a href="https://armutie.github.io/bitepoint/" target="_blank" rel="noopener noreferrer">Play Bite Point &rarr;</a>
+                    <a href="https://github.com/armutie/bitepoint" target="_blank" rel="noopener noreferrer">Inspect the code &rarr;</a>
+                </div>
+            </section>
+        </article>
+        <footer class="project-footer fade-in"><a href="./" class="back-link">&larr; Back to projects</a></footer>
+    </main>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Selected mechanical mechanisms by Abdur Rahman Mutie: a head-tracking pan-tilt turret and a coin-operated claw machine.">
+    <title>Selected Mechanical Mechanisms | Abdur Rahman Mutie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <script src="../script.js" defer></script>
+</head>
+
+<body>
+    <nav class="nav" aria-label="Primary navigation">
+        <a href="../index.html" class="nav-name">armutie</a>
+        <div class="nav-links">
+            <a href="./" class="nav-link">projects</a>
+            <a href="../experience/" class="nav-link">experience</a>
+            <a href="../writing/" class="nav-link">writing</a>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light mode">
+                <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5A8.5 8.5 0 1 0 20.5 14.5Z" /></svg>
+                <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93" /></svg>
+            </button>
+        </div>
+    </nav>
+
+    <main class="project-page compact mechanisms-page">
+        <header class="page-intro fade-in">
+            <span class="project-tag">Mechanical Design &middot; Prototyping</span>
+            <h1>Selected Mechanisms</h1>
+            <p class="project-subtitle">Two small projects that moved from CAD and mechanism design into working hardware.</p>
+        </header>
+
+        <article class="project-content">
+            <section class="mechanism-project fade-in">
+                <div class="mechanism-heading">
+                    <div>
+                        <span class="case-index">01 / PAN-TILT MECHANISM</span>
+                        <h2>Head-tracking turret</h2>
+                    </div>
+                    <span class="mechanism-tools">SolidWorks / 3D printing / Arduino / OpenCV</span>
+                </div>
+
+                <div class="case-gallery case-gallery-three mechanism-gallery">
+                    <figure>
+                        <img src="../src/mechanisms/turret-base.png" alt="SolidWorks baseplate for the turret">
+                        <figcaption>Baseplate CAD, revision 5</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../src/mechanisms/turret-tilt.png" alt="SolidWorks tilt bracket for the turret">
+                        <figcaption>Tilt mechanism CAD, revision 2</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../src/mechanisms/turret-physical.jpg" alt="Printed and assembled pan-tilt turret">
+                        <figcaption>Printed two-axis assembly</figcaption>
+                    </figure>
+                </div>
+
+                <div class="mechanism-summary">
+                    <p><strong>Mechanical:</strong> modeled the baseplate and tilt bracket, iterated clearance fits,
+                        and designed the parts for reliable desktop 3D printing and assembly.</p>
+                    <p><strong>Control:</strong> sent OpenCV face coordinates over serial to an Arduino controlling
+                        two servo motors. The assembled mechanism followed face motion through both axes.</p>
+                </div>
+            </section>
+
+            <section class="mechanism-project fade-in">
+                <div class="mechanism-heading">
+                    <div>
+                        <span class="case-index">02 / COIN-OPERATED MACHINE</span>
+                        <h2>Claw machine</h2>
+                    </div>
+                    <span class="mechanism-tools">Mechanism co-design / RobotC / LEGO EV3</span>
+                </div>
+
+                <div class="case-gallery case-gallery-three">
+                    <figure>
+                        <img src="../src/mechanisms/claw-machine.jpeg" alt="Complete coin-operated claw machine">
+                        <figcaption>Complete machine and XYZ gantry</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../src/mechanisms/claw-mechanism.jpeg" alt="Worm-gear claw mechanism">
+                        <figcaption>Worm-gear claw for repeatable gripping</figcaption>
+                    </figure>
+                    <figure>
+                        <img src="../src/mechanisms/claw-joystick.jpeg" alt="Custom joystick for the claw machine">
+                        <figcaption>Custom operator joystick</figcaption>
+                    </figure>
+                </div>
+
+                <div class="mechanism-summary">
+                    <p><strong>Mechanical:</strong> co-developed the LEGO Technic worm-gear claw for gripping strength
+                        and repeatable motion inside a custom structural enclosure.</p>
+                    <p><strong>Software:</strong> served as the sole RobotC developer, programming the XYZ gantry,
+                        joystick interface, claw sequence, game states, and display. More than 50 people used the machine
+                        during a University of Waterloo showcase.</p>
+                </div>
+            </section>
+        </article>
+
+        <footer class="project-footer fade-in">
+            <a href="./" class="back-link">&larr; Back to projects</a>
+        </footer>
+    </main>
+</body>
+
+</html>

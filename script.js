@@ -1,4 +1,5 @@
 const canvas = document.getElementById('bg-canvas');
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const themeToggle = document.querySelector('[data-theme-toggle]');
 const root = document.documentElement;
@@ -234,12 +235,14 @@ if (canvas) {
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'hidden') {
             stopAnimation();
-        } else {
+        } else if (!prefersReducedMotion) {
             startAnimation();
         }
     });
 
-    if (document.visibilityState === 'visible') {
+    if (prefersReducedMotion) {
+        drawDots();
+    } else if (document.visibilityState === 'visible') {
         startAnimation();
     }
 }

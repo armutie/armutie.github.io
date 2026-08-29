@@ -4,117 +4,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abdur Rahman Mutie | Mechatronics</title>
+    <meta name="description"
+        content="Abdur Rahman Mutie is a mechatronics engineering student building autonomous robots and practical software systems.">
+    <title>Abdur Rahman Mutie | Mechatronics & Autonomy</title>
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
         rel="stylesheet">
-
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <script src="script.js" defer></script>
 </head>
 
 <body>
     <canvas id="bg-canvas"></canvas>
 
-    <!-- Navigation -->
-    <nav class="nav">
+    <nav class="nav" aria-label="Primary navigation">
         <a href="/" class="nav-name">armutie</a>
         <div class="nav-links">
             <a href="projects/" class="nav-link">projects</a>
-            <a href="#experience" class="nav-link">experience</a>
+            <a href="experience/" class="nav-link">experience</a>
+            <a href="writing/" class="nav-link">writing</a>
             <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to light mode">
                 <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5A8.5 8.5 0 1 0 20.5 14.5Z" />
                 </svg>
                 <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
                     <circle cx="12" cy="12" r="4" />
-                    <path d="M12 2V4" />
-                    <path d="M12 20V22" />
-                    <path d="M4.93 4.93L6.34 6.34" />
-                    <path d="M17.66 17.66L19.07 19.07" />
-                    <path d="M2 12H4" />
-                    <path d="M20 12H22" />
-                    <path d="M4.93 19.07L6.34 17.66" />
-                    <path d="M17.66 6.34L19.07 4.93" />
+                    <path d="M12 2V4M12 20V22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M2 12H4M20 12H22M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93" />
                 </svg>
             </button>
         </div>
     </nav>
 
-    <main class="content">
-        <header class="intro">
-            <div class="status-line">
-                <span class="status-dot"></span>
-                <span>Mechatronics Engineering</span>
-                <a href="https://uwaterloo.ca/future-students/programs/mechatronics-engineering" target="_blank" rel="noopener noreferrer" class="status-badge" aria-label="University of Waterloo Mechatronics Engineering program">@ UWaterloo</a>
+    <main class="content notebook-content">
+        <header class="intro editorial-hero fade-in">
+            <div class="hero-copy">
+                <div class="status-line">
+                    <span class="status-dot"></span>
+                    <span>Mechatronics / Robotics / Software</span>
+                </div>
+                <h1 class="hero-title">Abdur Rahman Mutie</h1>
+                <p class="tagline">I build autonomous robots and mechanical systems that survive the jump from
+                    <span class="accent">CAD and simulation to physical testing</span>.</p>
+                <div class="hero-actions" aria-label="Portfolio links">
+                    <a href="projects/dpr.html" class="hero-action hero-action-primary">View flagship project</a>
+                    <a href="engineering-portfolio.pdf" class="hero-action" target="_blank"
+                        rel="noopener noreferrer">Open portfolio PDF</a>
+                </div>
             </div>
-            <h1 class="hero-title">Abdur Rahman Mutie</h1>
-            <p class="tagline">My goal is to accelerate the transition to <span class="accent">embodied
-                    intelligence</span>.</p>
+
+            <aside class="identity-rail" aria-label="Current role and education">
+                <div class="identity-block">
+                    <span class="rail-label">Currently</span>
+                    <strong>Software Team Lead</strong>
+                    <span>UW MedTech Robotics</span>
+                </div>
+
+                <a href="https://uwaterloo.ca/future-students/programs/mechatronics-engineering" target="_blank"
+                    rel="noopener noreferrer" class="education-card"
+                    aria-label="University of Waterloo Mechatronics Engineering program">
+                    <span class="education-logo-wrap">
+                        <img src="src/uwaterloo-logo.png" alt="University of Waterloo" class="education-logo">
+                    </span>
+                    <span class="education-copy">
+                        <span class="rail-label">Education</span>
+                        <strong>BASc, Mechatronics Engineering</strong>
+                        <span>2024&ndash;2029 &middot; 92.29% CGPA</span>
+                    </span>
+                    <span class="external-icon card-arrow" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M14 4H20V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M20 4L10 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M20 14V20H4V4H10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                    </span>
+                </a>
+
+                <div class="identity-block identity-block-small">
+                    <span class="rail-label">Based in</span>
+                    <strong>Waterloo, Ontario</strong>
+                </div>
+            </aside>
         </header>
 
-        <section id="projects" class="what-ive-built">
-            <h2>What I've Been Building</h2>
-            <ul class="build-list">
-                <li>-> Built a <a href="projects/battlebot.html" class="sweep-link">combat robot</a> for UW BattleBots -
-                    survived all 3 rounds at competition</li>
-                <li>-> Implemented <a href="https://github.com/Henro1708/TIC_Software_Challenge_S25" class="sweep-link"
-                        target="_blank" rel="noopener noreferrer">ROS2 autonomous navigation</a>
-                    for Toyota Innovation Challenge hackathon</li>
-                <li>-> Created a <a href="https://github.com/armutie/learning-chess" class="sweep-link" target="_blank"
-                        rel="noopener noreferrer">Python chess
-                        engine</a> - full
-                    OOP architecture</li>
-                <li>-> Currently building an <a href="projects/rc-airplane.html" class="sweep-link">autonomous RC
-                        aircraft</a></li>
-            </ul>
-            <a href="projects/" class="see-all-projects">See all projects -></a>
-        </section>
+        <div class="signal-stream">
+            <section id="projects" class="stream-section what-ive-built fade-in">
+                <div class="section-heading">
+                    <div>
+                        <span class="section-index">01 / CURRENT WORK</span>
+                        <h2>What I've Been Building</h2>
+                    </div>
+                    <a href="projects/" class="text-link">All projects &rarr;</a>
+                </div>
 
-        <section id="experience" class="experience-section">
-            <h2>Previously</h2>
-
-            <div class="job-item">
-                <span class="job-arrow">-></span>
-                <span class="job-role">Engineering Co-op</span>
-                <a href="https://www.martinrea.com/about-us/" target="_blank" rel="noopener noreferrer"
-                    class="job-company-link">
-                    <img src="src/martinrea.webp" alt="Martinrea" class="job-logo-inline" loading="lazy"
-                        decoding="async">
-                    <span class="job-company sweep-link">Martinrea</span>
+                <a href="projects/dpr.html" class="featured-project featured-project-dpr">
+                    <span class="featured-project-copy">
+                        <span class="feature-kicker">Flagship project &middot; Software Team Lead</span>
+                        <strong>Drowning Prevention Robot</strong>
+                        <span>Built and field-tested waypoint autonomy, embedded sensor integration, radar perception,
+                            live vision, and a modular ROS 2 architecture for UW MedTech Robotics.</span>
+                        <span class="feature-meta">ROS 2 &middot; GNSS &middot; BNO055 &middot; LiDAR &middot; mmWave radar</span>
+                    </span>
+                    <span class="featured-visual">
+                        <img src="src/dpr/robot-bench.jpg"
+                            alt="Drowning prevention robot during hardware integration testing">
+                        <span class="visual-caption"><span>PHYSICAL SYSTEM / INTEGRATION</span><span>FIELD TESTED</span></span>
+                    </span>
+                    <span class="external-icon featured-external" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M14 4H20V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M20 4L10 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /><path d="M20 14V20H4V4H10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                    </span>
                 </a>
-            </div>
 
-            <div class="job-item">
-                <span class="job-arrow">-></span>
-                <span class="job-role">AI Engineering Intern</span>
-                <a href="https://vectorglobe.com/about-us/" target="_blank" rel="noopener noreferrer"
-                    class="job-company-link">
-                    <img src="src/vectorglobe_logo.jpg" alt="VectorGlobe" class="job-logo-inline" loading="lazy"
-                        decoding="async">
-                    <span class="job-company sweep-link">VectorGlobe</span>
-                </a>
-            </div>
-        </section>
-        <section class="writing-section">
-            <h2>Writing</h2>
-            <p class="section-note">Coming Soon</p>
-        </section>
+                <div class="build-list secondary-builds">
+                    <a href="projects/battlebot.html" class="build-item">
+                        <span class="build-number">02</span>
+                        <span class="build-copy">
+                            <strong>150 g vertical-spinner BattleBot</strong>
+                            <span>Led mechanical design through a two-week sprint; one of 7 teams from a 20+ team
+                                field to complete an operational robot.</span>
+                        </span>
+                        <span class="card-arrow" aria-hidden="true">&rarr;</span>
+                    </a>
 
-    <footer class="links">
-        <a href="mailto:armutie@uwaterloo.ca">email</a>
-        <a href="https://linkedin.com/in/armutie" target="_blank" rel="noopener noreferrer">linkedin</a>
-        <a href="https://github.com/armutie" target="_blank" rel="noopener noreferrer">github</a>
-    </footer>
+                    <a href="projects/mechanisms.html" class="build-item">
+                        <span class="build-number">03</span>
+                        <span class="build-copy">
+                            <strong>Selected mechanical mechanisms</strong>
+                            <span>Designed, printed, and assembled a face-tracking pan-tilt turret; co-developed a
+                                worm-gear claw and coin-operated machine.</span>
+                        </span>
+                        <span class="card-arrow" aria-hidden="true">&rarr;</span>
+                    </a>
+
+                    <a href="projects/bitepoint.html" class="build-item">
+                        <span class="build-number">04</span>
+                        <span class="build-copy">
+                            <strong>Bite Point racing simulation</strong>
+                            <span>Built a browser racing game with deterministic vehicle dynamics, ghost laps,
+                                sector timing, and server-side lap verification.</span>
+                        </span>
+                        <span class="card-arrow" aria-hidden="true">&rarr;</span>
+                    </a>
+
+                    <a href="projects/table-tennis.html" class="build-item">
+                        <span class="build-number">05</span>
+                        <span class="build-copy">
+                            <strong>First-person table-tennis simulation</strong>
+                            <span>Modelled drag, Magnus force, spin-coupled bounces, AI opponents, and authoritative
+                                LAN multiplayer in Python.</span>
+                        </span>
+                        <span class="card-arrow" aria-hidden="true">&rarr;</span>
+                    </a>
+                </div>
+            </section>
+
+            <section id="experience" class="stream-section experience-section fade-in">
+                <div class="section-heading">
+                    <div>
+                        <span class="section-index">02 / EXPERIENCE</span>
+                        <h2>Selected Work</h2>
+                    </div>
+                    <a href="experience/" class="text-link">Full case studies &rarr;</a>
+                </div>
+
+                <div class="experience-composition">
+                    <div class="experience-list">
+                        <a href="experience/venuiti.html" class="experience-card">
+                            <span class="company-mark company-mark-text" aria-hidden="true">V</span>
+                            <span class="experience-copy">
+                                <span class="experience-meta">May&ndash;Aug 2026 &middot; Waterloo</span>
+                                <strong>AI Full Stack Developer Co-op</strong>
+                                <span class="experience-company">Venuiti Solutions</span>
+                            </span>
+                            <span class="card-arrow" aria-hidden="true">&rarr;</span>
+                        </a>
+
+                        <a href="experience/martinrea.html" class="experience-card">
+                            <span class="company-mark"><img src="src/martinrea.webp" alt=""></span>
+                            <span class="experience-copy">
+                                <span class="experience-meta">Sep&ndash;Dec 2025 &middot; Ontario</span>
+                                <strong>Engineering Co-op Student</strong>
+                                <span class="experience-company">Martinrea Industrial Canada</span>
+                            </span>
+                            <span class="card-arrow" aria-hidden="true">&rarr;</span>
+                        </a>
+
+                        <a href="experience/vectorglobe.html" class="experience-card">
+                            <span class="company-mark"><img src="src/vectorglobe_logo.jpg" alt=""></span>
+                            <span class="experience-copy">
+                                <span class="experience-meta">Jan&ndash;Apr 2025 &middot; Dubai</span>
+                                <strong>AI Engineering Intern</strong>
+                                <span class="experience-company">VectorGlobe</span>
+                            </span>
+                            <span class="card-arrow" aria-hidden="true">&rarr;</span>
+                        </a>
+                    </div>
+
+                    <aside class="experience-stats" aria-label="Selected outcomes">
+                        <div><strong>1,000+</strong><span>synthetic patient records tested</span></div>
+                        <div><strong>90%+</strong><span>less manual PO review time</span></div>
+                        <div><strong>20%</strong><span>lighter fixture redesign</span></div>
+                    </aside>
+                </div>
+            </section>
+
+        </div>
+
+        <footer class="links">
+            <a href="mailto:armutie@uwaterloo.ca">email</a>
+            <a href="https://linkedin.com/in/armutie" target="_blank" rel="noopener noreferrer">linkedin</a>
+            <a href="https://github.com/armutie" target="_blank" rel="noopener noreferrer">github</a>
+            <a href="engineering-portfolio.pdf" target="_blank" rel="noopener noreferrer">portfolio PDF</a>
+        </footer>
     </main>
-    <!-- Cloudflare Web Analytics -->
-    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js"
         data-cf-beacon='{"token": "fada2897b3d740559851f4f5841840f5"}'></script>
-    <!-- End Cloudflare Web Analytics -->
 </body>
 
 </html>
